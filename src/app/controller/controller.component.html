@@ -1,0 +1,7 @@
+<main>
+  <!-- <app-table></app-table> -->
+  <!-- <app-table-test></app-table-test> -->
+  <app-map (onMapLoaded)="mapIsReady = true"></app-map>
+  <app-data-table (onSelectionChange)="selectFestival($event)"
+                  [mapIsReady]="mapIsReady"></app-data-table>
+</main>

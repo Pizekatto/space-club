@@ -1,0 +1,166 @@
+[
+  {
+    "title": "Burning Man",
+    "website": "https://burningman.org/",
+    "coordinates": [
+      [
+        40.786245664621724,
+        -119.20582957022538
+      ]
+    ]
+  },
+  {
+    "title": "Coachella",
+    "website": "https://coachella.com/",
+    "coordinates": [
+      [
+        33.680436157996,
+        -116.23700430623643
+      ]
+    ]
+  },
+  {
+    "title": "Tomorrowland",
+    "website": "https://www.tomorrowland.com/home/",
+    "coordinates": [
+      [
+        51.08873376227304,
+        4.378108793248422
+      ]
+    ]
+  },
+  {
+    "title": "EXIT Universe",
+    "website": "https://www.exitfest.org/",
+    "coordinates": [
+      [
+        41.37397926725782,
+        2.1493880388801507
+      ],
+      [
+        41.35493263706336,
+        2.127899773341191
+      ]
+    ]
+  },
+  {
+    "title": "Стереолето",
+    "website": "https://bestfest.ru/",
+    "coordinates": [
+      [
+        59.92436956348761,
+        30.242355720949746
+      ]
+    ]
+  },
+  {
+    "title": "Дикая Мята",
+    "website": "https://mintmusic.ru/",
+    "coordinates": [
+      [
+        54.584003,
+        37.161356
+      ]
+    ]
+  },
+  {
+    "title": "Outline",
+    "website": "https://outlinefestival.org/",
+    "coordinates": [
+      [
+        56.817731,
+        37.296365
+      ]
+    ]
+  },
+  {
+    "title": "Signal",
+    "website": "https://signal.live/",
+    "coordinates": [
+      [
+        54.749242,
+        35.600244
+      ]
+    ]
+  },
+  {
+    "title": "Magnetic Fields",
+    "website": "https://www.magneticfields.in/",
+    "coordinates": [
+      [
+        28.30718000327904,
+        75.28661554304985
+      ]
+    ]
+  },
+  {
+    "title": "Present Perfect",
+    "website": "https://ppf.runited.ru/",
+    "coordinates": [
+      [
+        59.924126,
+        30.240923
+      ]
+    ]
+  },
+  {
+    "title": "Universo Paralello",
+    "website": "https://universoparalello.org/en/bemvindo/",
+    "coordinates": [
+      [
+        -13.511069078003704,
+        -38.9266873792603
+      ]
+    ]
+  },
+  {
+    "title": "Стихия",
+    "website": "https://stihia.org/",
+    "coordinates": [
+      [
+        43.216274,
+        60.286199
+      ]
+    ]
+  },
+  {
+    "title": "Кастры",
+    "website": "https://kastry.art/",
+    "coordinates": [
+      [
+        59.059960,
+        30.144402
+      ]
+    ]
+  },
+  {
+    "title": "Odyssey",
+    "website": "https://vk.com/odysseyfestival",
+    "coordinates": [
+      [
+        59.939079,
+        30.315766
+      ]
+    ]
+  },
+  {
+    "title": "Gamma",
+    "website": "https://gammafestival.ru/",
+    "coordinates": [
+      [
+        59.911177,
+        30.267035
+      ]
+    ]
+  },
+  {
+    "title": "Ethnoscope",
+    "website": "https://ethnoscope.ru/",
+    "coordinates": [
+      [
+        60.246381,
+        29.164114
+      ]
+    ]
+  }
+]

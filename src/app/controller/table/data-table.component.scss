@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  height: 55%;
+  overflow-y: scroll;
+}
+
+tr[mat-row] {
+  &:hover {
+    background: whitesmoke;
+    cursor: pointer;
+  }
+  &:active {
+    background: #efefef;
+  }
+}
