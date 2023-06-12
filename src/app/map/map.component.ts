@@ -13,6 +13,7 @@ import mapboxgl from 'mapbox-gl'
   }
 })
 export class MapComponent {
+  startingСenter: [number, number]
   mapbox: any
   mapLoaded: boolean = false
   onMapLoaded = new EventEmitter<boolean>()
@@ -21,7 +22,9 @@ export class MapComponent {
     private dataService: DataService,
     @Inject(ACCESS_TOKENS) private accessTokens: AccessTokens,
     private injector: Injector
-  ) {}
+  ) {
+    this.startingСenter = this.dataService.allFestivalsCoordinates[0]
+  }
 
   async ngOnInit() {
     mapboxgl.accessToken = this.injector.get(ACCESS_TOKENS).mapbox
@@ -78,8 +81,8 @@ export class MapComponent {
     const map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v12', // style URL
-      center: [-74.5, 40],
-      zoom: 2
+      center: this.startingСenter,
+      zoom: 3
     })
     await new Promise(resolve => {
       map.on('load', () => resolve('Карта загружена'))

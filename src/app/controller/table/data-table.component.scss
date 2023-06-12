@@ -1,6 +1,10 @@
 :host {
+  position: absolute;
+  bottom: 34%;
+  left: 12%;
+  right: 12%;
   display: block;
-  height: 55%;
+  height: 450px;
   overflow-y: scroll;
 }
 
@@ -11,5 +15,12 @@ tr[mat-row] {
   }
   &:active {
     background: #efefef;
+  }
+}
+
+a {
+  text-decoration: none;
+  &:hover {
+    color: deeppink;
   }
 }

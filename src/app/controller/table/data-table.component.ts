@@ -11,9 +11,9 @@ import { Festival } from '@app/data/interfaces'
 })
 export class DataTableComponent {
   dataSource: MatTableDataSource<Festival>
-  displayedColumns: Array<keyof Festival> = ['title', 'website']
+  displayedColumns: Array<keyof Festival> = ['title']
   titles: Record<keyof Festival, string> = {
-    title: 'Название',
+    title: 'Фестиваль',
     website: 'Сайт',
     coordinates: 'Координаты'
   }
