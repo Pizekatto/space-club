@@ -5,22 +5,27 @@
   right: 12%;
   display: block;
   height: 450px;
-  overflow-y: scroll;
+  --top-container-height: 100px;
+}
+
+header {
+  display: flex;
+  height: var(--top-container-height);
+  background-color: #fafafa;
+  border-radius: 20px 20px 0 0;
+}
+
+main {
+  height: calc(100% - var(--top-container-height));
+  overflow-y: auto;
 }
 
 tr[mat-row] {
   &:hover {
-    background: whitesmoke;
     cursor: pointer;
-  }
-  &:active {
-    background: #efefef;
   }
 }
 
 a {
   text-decoration: none;
-  &:hover {
-    color: deeppink;
-  }
 }
