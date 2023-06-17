@@ -1,6 +1,54 @@
 <header>
+  <mat-chip-listbox class="left"
+                    selectable
+                    multiple
+                    (change)="filters = $event.value">
+    <mat-chip-option *ngFor="let chip of CHIPS"
+                     disableRipple
+                     [value]="chip.value"
+                     selected="selectedFilters.includes(chip.value)">
+      {{chip.title}}
+    </mat-chip-option>
+    <mat-chip>{{startDate | date}} - {{endDate | date}}
+    </mat-chip>
+  </mat-chip-listbox>
+
+  <div class="right">
+    <!-- <button mat-button
+            color="warn"
+            (click)="clearDates()">Очистить даты</button> -->
+    <mat-datepicker-toggle matIconSuffix
+                           [for]="picker">
+    </mat-datepicker-toggle>
+    <mat-date-range-picker #picker
+                           (monthSelected)="logging($event)"></mat-date-range-picker>
+    <mat-form-field class="datepicker"
+                    subscriptSizing="dynamic">
+      <mat-date-range-input [formGroup]="dateSortRange"
+                            [rangePicker]="picker"
+                            empty="true">
+        <input matStartDate
+               formControlName="start">
+        <input matEndDate
+               formControlName="end">
+      </mat-date-range-input>
+    </mat-form-field>
+
+  </div>
 
 </header>
+<section class="middle">
+  <button *ngIf="!plus; else addForm"
+          mat-icon-button
+          color="primary"
+          (click)="add()">
+    <mat-icon>add_circle_outline</mat-icon>
+  </button>
+  <ng-template #addForm>
+    <ng-container *ngTemplateOutlet="create_update_form; context: {formGroup: this.createUpdateForm}">
+    </ng-container>
+  </ng-template>
+</section>
 <main>
   <table mat-table
          [dataSource]="dataSource">
@@ -8,7 +56,7 @@
     <ng-container matColumnDef="{{key}}"
                   *ngFor="let key of displayedColumns">
       <th mat-header-cell
-          *matHeaderCellDef>{{titles[key]}}</th>
+          *matHeaderCellDef>{{titles[key]}} ({{dataSource.filteredData.length}})</th>
       <ng-container *ngIf="key == 'title';else notTitleRow">
         <td mat-cell
             *matCellDef="let row">
@@ -33,3 +81,82 @@
 
   </table>
 </main>
+
+<ng-template #create_update_form
+             let-formGroup="formGroup">
+  <form [formGroup]="formGroup"
+        class="add-row"
+        (ngSubmit)="saveFestival(formGroup)">
+    <mat-form-field class="inputs-title"
+                    subscriptSizing="dynamic">
+      <mat-label>Название</mat-label>
+      <input #titleInput
+             matInput
+             formControlName="title">
+      <button type="button"
+              *ngIf="titleInput.value"
+              matSuffix
+              mat-icon-button
+              (click)="createUpdateForm.controls['title'].reset()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+    <mat-form-field class="inputs-place"
+                    subscriptSizing="dynamic">
+      <mat-label>Место</mat-label>
+      <input #placeInput
+             matInput
+             formControlName="place"
+             placeholder="Ввести место или поставить точку на карту">
+      <button type="button"
+              *ngIf="placeInput.value"
+              matSuffix
+              mat-icon-button
+              (click)="createUpdateForm.controls['place'].reset()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <button type="button"
+              class="select-place"
+              matSuffix
+              mat-icon-button
+              (click)="selectPlace($event)">
+        <mat-icon>my_location</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-date-range-input #dateRangeInput
+                            formGroupName="date"
+                            [rangePicker]="picker">
+        <input matStartDate
+               formControlName="start"
+               placeholder="начнется">
+        <input matEndDate
+               formControlName="end"
+               placeholder="закончится">
+      </mat-date-range-input>
+      <button type="button"
+              matSuffix
+              mat-icon-button
+              (click)="createUpdateForm.controls['date'].reset()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-datepicker-toggle matIconSuffix
+                             [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+
+    <button mat-icon-button
+            color="primary">
+      <mat-icon>done</mat-icon>
+    </button>
+    <button type="button"
+            mat-icon-button
+            color="warn"
+            (click)="cancel()">
+      <mat-icon>cancel</mat-icon>
+    </button>
+  </form>
+
+</ng-template>

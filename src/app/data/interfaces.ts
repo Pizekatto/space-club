@@ -8,8 +8,15 @@ export interface PeriodicElement {
 
 export interface Festival {
   title: string
-  website: string
+  website?: string
   coordinates: [number, number][]
+  place?: string
+  date?:
+    | {
+        start: Date
+        end: Date
+      }[]
+    | null
 }
 
 export type Coordinates = Festival['coordinates']

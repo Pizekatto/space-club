@@ -1,6 +1,20 @@
 @use '@angular/material' as mat;
 @use './app/controller/table/data-table-theme.component' as data-table;
 
+*,
+:after,
+:before {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100vh;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
 $my-primary: mat.define-palette(mat.$indigo-palette);
 $my-accent: mat.define-palette(mat.$pink-palette);
 $my-warn: mat.define-palette(mat.$red-palette);
@@ -15,7 +29,7 @@ $light-theme: mat.define-light-theme(
   (
     color: $my-color-config,
     typography: $my-typography,
-    density: 0
+    density: -1
   )
 );
 
@@ -38,7 +52,16 @@ $dark-theme: mat.define-dark-theme(
 @include mat.form-field-theme($light-theme);
 @include mat.input-theme($light-theme);
 @include mat.checkbox-theme($light-theme);
+@include mat.datepicker-theme($light-theme);
+@include mat.chips-theme($light-theme);
+@include mat.icon-button-theme($light-theme);
+@include mat.icon-theme($light-theme);
 @include data-table.theme($light-theme);
+
+@include mat.form-field-density(-3);
+@include mat.input-density(-3);
+@include mat.button-density(-3);
+@include mat.icon-density(-3);
 
 @media (prefers-color-scheme: dark) {
   @include mat.core-color($dark-theme);
@@ -48,13 +71,24 @@ $dark-theme: mat.define-dark-theme(
   @include mat.form-field-color($dark-theme);
   @include mat.input-color($dark-theme);
   @include mat.checkbox-color($dark-theme);
+  @include mat.datepicker-color($dark-theme);
+  @include mat.chips-color($dark-theme);
+  @include mat.icon-button-color($dark-theme);
+  @include mat.icon-color($dark-theme);
+  @include data-table.theme($dark-theme);
 }
 
-html,
-body {
-  height: 100vh;
+// .mat-date-range-input-container {
+//   display: none !important;
+// }
+
+// --- data-table.component
+.mat-mdc-form-field-icon-suffix {
+  display: flex;
 }
-body {
-  margin: 0;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+
+mat-chip-listbox > div.mdc-evolution-chip-set__chips {
+  flex-flow: row nowrap;
 }
+
+// data-table.component ---

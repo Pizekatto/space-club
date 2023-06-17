@@ -1,23 +1,73 @@
 :host {
   position: absolute;
   bottom: 34%;
-  left: 12%;
-  right: 12%;
+  left: 5%;
+  right: 5%;
   display: block;
   height: 450px;
-  --top-container-height: 100px;
 }
-
 header {
   display: flex;
-  height: var(--top-container-height);
-  background-color: #fafafa;
+  justify-content: space-between;
   border-radius: 20px 20px 0 0;
+  background-color: #fafafa;
+  padding: 10px;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+}
+mat-chip-listbox.left {
+  overflow-x: hidden;
+  align-items: center;
+}
+.date-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+mat-form-field.datepicker {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+section.middle {
+  background-color: #fafafa;
+  text-align: center;
+}
+form.add-row {
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  & > * {
+    margin-right: 10px;
+  }
+}
+.inputs {
+  &-title {
+    flex-grow: 1;
+    min-width: 150px;
+    max-width: 350px;
+  }
+  &-place {
+    flex-grow: 4;
+  }
+}
+
+.right {
+  position: relative;
+  display: flex;
 }
 
 main {
-  height: calc(100% - var(--top-container-height));
+  height: 70%;
   overflow-y: auto;
+  background-color: #fafafa;
 }
 
 tr[mat-row] {

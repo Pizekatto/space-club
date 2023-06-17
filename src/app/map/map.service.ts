@@ -2,11 +2,18 @@ import { Injectable } from '@angular/core'
 import { Coordinates } from '@app/data/interfaces'
 import { Subject } from 'rxjs'
 
+export enum Locations {
+  russia = 'russia',
+  europe = 'europe',
+  asia = 'asia',
+  america = 'america'
+}
+
 @Injectable()
 export class MapService {
-  public $coordinates = new Subject<Coordinates>()
+  $coordinates = new Subject<Coordinates>()
 
-  public setCoordinates(coordinates: Coordinates) {
+  setCoordinates(coordinates: Coordinates) {
     this.$coordinates.next(coordinates)
   }
 }

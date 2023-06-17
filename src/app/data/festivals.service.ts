@@ -2,11 +2,22 @@ import { Injectable } from '@angular/core'
 import festivals from './festivals.json'
 import { Festival } from './interfaces'
 
-console.log('в точке импорта JSON', festivals[0].coordinates)
-
 @Injectable()
 export class FestivalsService {
+  festivalss: Festival[]
+  constructor() {
+    this.festivalss = festivals.map(el => ({
+      ...el,
+      coordinates: el.coordinates as [number, number][],
+      date:
+        el.date?.map(el => ({
+          start: new Date(el.start),
+          end: new Date(el.end)
+        })) || null
+    }))
+  }
   getData(): Festival[] {
-    return festivals as Festival[]
+    console.log(this.festivalss)
+    return this.festivalss
   }
 }
