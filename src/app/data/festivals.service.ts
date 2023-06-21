@@ -5,6 +5,14 @@ import { Festival } from './interfaces'
 @Injectable()
 export class FestivalsService {
   festivalss: Festival[]
+  exampleFest = {
+    title: 'Фестиваль Электронной Музыки',
+    place: 'Краснодар',
+    date: {
+      start: new Date(2023, 6, 10),
+      end: new Date(2023, 6, 15)
+    }
+  }
   constructor() {
     this.festivalss = festivals.map(el => ({
       ...el,
@@ -17,7 +25,6 @@ export class FestivalsService {
     }))
   }
   getData(): Festival[] {
-    console.log(this.festivalss)
     return this.festivalss
   }
 }

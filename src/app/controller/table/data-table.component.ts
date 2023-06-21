@@ -3,8 +3,9 @@ import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms'
 import { MatTableDataSource } from '@angular/material/table'
 import { DataService } from '@app/data/data.service'
+import { FestivalsService } from '@app/data/festivals.service'
 import { CHIPS } from '@app/data/filters'
-import { Festival } from '@app/data/interfaces'
+import { Festival, CreateUpdateForm } from '@app/data/interfaces'
 import { Locations } from '@app/map/map.service'
 
 @Component({
@@ -25,7 +26,7 @@ export class DataTableComponent {
   allowMultiSelect = false
   selection: SelectionModel<Festival>
   dateSortRange: FormGroup
-  createUpdateForm: FormGroup
+  createUpdateForm: CreateUpdateForm
   startDate? = ''
   endDate? = ''
   CHIPS = CHIPS
@@ -36,19 +37,12 @@ export class DataTableComponent {
     this.filter(value.reduce<string>((acc, item) => acc + '.' + item, ''))
   }
   plus = false
-  exampleFest = {
-    title: 'Фестиваль Электронной Музыки',
-    place: 'Краснодар',
-    date: {
-      start: new Date(2023, 6, 10),
-      end: new Date(2023, 6, 15)
-    }
-  }
+  exampleFest = this.festService.exampleFest
 
   @Input() mapIsReady = false
   @Output() onSelectionChange = new EventEmitter<Festival>()
 
-  constructor(private dataService: DataService, private fb: FormBuilder) {
+  constructor(private dataService: DataService, private fb: FormBuilder, private festService: FestivalsService) {
     this.dataSource = new MatTableDataSource<Festival>(this.dataService.getFestivals())
     this.selection = new SelectionModel<Festival>(this.allowMultiSelect, this.initialSelection)
     this.selection.changed.subscribe(() => {
@@ -119,5 +113,6 @@ export class DataTableComponent {
 
   saveFestival(formGroup: any) {
     console.log(formGroup)
+    console.log(formGroup.value)
   }
 }

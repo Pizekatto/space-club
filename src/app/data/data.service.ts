@@ -64,10 +64,12 @@ export class DataService {
   }
   passedFilter(festival: Festival): boolean | void {
     if (!festival.date) return
+    if (!festival.date[0].start) return
     if (new Date(festival.date[0].start) < new Date()) return true
   }
   notPassedFilter(festival: Festival): boolean | void {
     if (!festival.date) return
+    if (!festival.date[0].start) return
     if (new Date(festival.date[0].start) > new Date()) return true
   }
 }
