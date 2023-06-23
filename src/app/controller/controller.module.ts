@@ -16,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MatNativeDateModule } from '@angular/material/core'
 import { MatChipsModule } from '@angular/material/chips'
+import { MatAutocompleteModule } from '@angular/material/autocomplete'
 
 import { ControllerComponent } from './controller.component'
 import { DataTableComponent } from './table/data-table.component'
@@ -40,7 +41,8 @@ import { MapModule } from '@app/map/map.module'
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatChipsModule
+    MatChipsModule,
+    MatAutocompleteModule
   ],
   providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } }]
 })

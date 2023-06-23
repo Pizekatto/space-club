@@ -6,7 +6,8 @@ import { DataService } from '@app/data/data.service'
 import { FestivalsService } from '@app/data/festivals.service'
 import { CHIPS } from '@app/data/filters'
 import { Festival, CreateUpdateForm } from '@app/data/interfaces'
-import { Locations } from '@app/map/map.service'
+import { Locations, MapService } from '@app/map/map.service'
+import { BehaviorSubject, Observable, Subject, debounceTime, map, startWith, switchMap, tap, filter } from 'rxjs'
 
 @Component({
   selector: 'app-data-table',
@@ -36,13 +37,23 @@ export class DataTableComponent {
     this._filters = value
     this.filter(value.reduce<string>((acc, item) => acc + '.' + item, ''))
   }
-  plus = false
+  plus = true
   exampleFest = this.festService.exampleFest
+  places: BehaviorSubject<any>
+  placeSelected = false
 
   @Input() mapIsReady = false
   @Output() onSelectionChange = new EventEmitter<Festival>()
+  @Output() onSelectNewPlace = new EventEmitter<[number, number]>()
+  @Output() onTurnSelectMapMode = new EventEmitter<void>()
+  @Output() onCancelLastSelect = new EventEmitter<void>()
 
-  constructor(private dataService: DataService, private fb: FormBuilder, private festService: FestivalsService) {
+  constructor(
+    private dataService: DataService,
+    private fb: FormBuilder,
+    private festService: FestivalsService,
+    private mapService: MapService
+  ) {
     this.dataSource = new MatTableDataSource<Festival>(this.dataService.getFestivals())
     this.selection = new SelectionModel<Festival>(this.allowMultiSelect, this.initialSelection)
     this.selection.changed.subscribe(() => {
@@ -64,6 +75,25 @@ export class DataTableComponent {
       this.endDate = v.end
     })
     this.dateSortRange.statusChanges.subscribe(v => console.log('status', v))
+    this.places = new BehaviorSubject(1)
+
+    this.createUpdateForm.controls['place'].valueChanges
+      .pipe(
+        debounceTime(2000),
+        filter(_ => !this.placeSelected),
+        filter(val => !!val),
+        tap(v => console.log(v)),
+        switchMap((request: any) => this.mapService.geoCodingGetAddress(request)),
+        tap(console.log),
+        tap(data => {
+          this.places.next(data)
+        })
+      )
+      .subscribe()
+  }
+
+  ngOnInit() {
+    this.places.next([])
   }
 
   addData(row: Festival) {
@@ -77,6 +107,7 @@ export class DataTableComponent {
   cancel() {
     this.plus = false
     this.createUpdateForm.reset()
+    this.placeSelected = false
   }
 
   selectRow(row: Festival) {
@@ -106,13 +137,43 @@ export class DataTableComponent {
     this.dataSource.filter = filter
   }
 
-  selectPlace(event: MouseEvent) {
-    console.log('выбрать место', event)
+  /** нажатие на прицел */
+  selectPoint(event: MouseEvent) {
     event.stopPropagation()
+    this.createUpdateForm.controls['place'].reset()
+    this.createUpdateForm.controls['place'].disable()
+    this.onTurnSelectMapMode.emit()
   }
 
   saveFestival(formGroup: any) {
     console.log(formGroup)
     console.log(formGroup.value)
+  }
+
+  clearPlaceField() {
+    this.createUpdateForm.controls['place'].reset()
+    this.places.next([])
+    if (this.placeSelected) {
+      this.onCancelLastSelect.emit()
+    }
+    this.placeSelected = false
+  }
+
+  /** Выбор места из автокомплита */
+  selectPlace(place: any) {
+    console.log(place)
+    this.placeSelected = true
+    const coordinates = this.places.getValue()[Number(place.option.id)].point.coordinates
+    console.log('вышли coordinates:', coordinates)
+
+    this.onSelectNewPlace.emit(coordinates)
+  }
+
+  showPlacePoint(coordinates: [number, number]) {
+    this.mapService.geoCodingGetAddress(coordinates).subscribe(result => {
+      console.log(result)
+      // this.createUpdateForm.controls['place'].setValue(result[0].place)
+      this.createUpdateForm.controls['place'].enable()
+    })
   }
 }

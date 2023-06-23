@@ -36,3 +36,8 @@ export type Coordinates = Festival['coordinates']
 export interface AccessTokens {
   mapbox: string
 }
+
+export interface GeoCodingResult {
+  place: string
+  point: any
+}

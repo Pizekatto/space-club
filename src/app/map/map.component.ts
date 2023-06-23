@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Injector, Input, OnChanges } from '@angular/core'
+import { Component, EventEmitter, Inject, Injector, Input, OnChanges, Output } from '@angular/core'
 import { ACCESS_TOKENS } from '@app/app.module'
 import { DataService } from '@app/data/data.service'
 import { AccessTokens, Coordinates, Festival } from '@app/data/interfaces'
@@ -16,7 +16,9 @@ export class MapComponent {
   startingСenter: [number, number]
   mapbox: any
   mapLoaded: boolean = false
-  onMapLoaded = new EventEmitter<boolean>()
+  allPointsCoordinates: [number, number][]
+  @Output() onMapLoaded = new EventEmitter<boolean>()
+  @Output() onPointCreated = new EventEmitter<[number, number]>()
 
   constructor(
     private dataService: DataService,
@@ -24,6 +26,7 @@ export class MapComponent {
     private injector: Injector
   ) {
     this.startingСenter = this.dataService.allFestivalsCoordinates[0]
+    this.allPointsCoordinates = this.dataService.allFestivalsCoordinates
   }
 
   async ngOnInit() {
@@ -37,7 +40,10 @@ export class MapComponent {
   }
 
   addFestivalsPoints() {
-    this.mapbox.addSource('points', this.createGeoJson(this.dataService.allFestivalsCoordinates))
+    this.mapbox.addSource('points', {
+      type: 'geojson',
+      data: this.createGeoJson(this.dataService.allFestivalsCoordinates)
+    })
 
     this.mapbox.addLayer({
       id: 'circle',
@@ -52,7 +58,7 @@ export class MapComponent {
     })
   }
 
-  createGeoJson(coordinates: Coordinates) {
+  createGeoJson = (coordinates: Coordinates) => {
     const features = coordinates.map(el => ({
       type: 'Feature',
       geometry: {
@@ -60,20 +66,29 @@ export class MapComponent {
         coordinates: el
       }
     }))
-
-    return {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features
-      }
+    const geoJson = {
+      type: 'FeatureCollection',
+      features
     }
+    return geoJson
   }
 
   async selectPoint(point: Coordinates) {
     if (!this.mapLoaded) return
     this.mapbox.flyTo({
       center: point[0]
+    })
+  }
+
+  addPointMode = () => {
+    const canvas = this.mapbox.getCanvasContainer()
+    canvas.style.cursor = 'crosshair'
+    this.mapbox.once('click', (event: any) => {
+      event.preventDefault()
+      const coordinates: [number, number] = [event.lngLat.lng, event.lngLat.lat]
+      console.log(coordinates)
+      this.createPoint(coordinates)
+      canvas.style.cursor = ''
     })
   }
 
@@ -90,17 +105,32 @@ export class MapComponent {
     return map
   }
 
-  async configureMap() {
+  configureMap = async () => {
     this.mapbox.on('mouseenter', 'circle', () => {
       this.mapbox.getCanvas().style.cursor = 'pointer'
     })
     this.mapbox.on('mouseleave', 'circle', () => {
       this.mapbox.getCanvas().style.cursor = ''
     })
-    this.mapbox.on('click', 'circle', (event: any) => {
-      this.mapbox.flyTo({
-        center: event.lngLat
-      })
+  }
+
+  createPoint = (coordinates: [number, number]) => {
+    this.allPointsCoordinates.push(coordinates)
+    const geojsonSource = this.mapbox.getSource('points')
+    const geojson = this.createGeoJson(this.allPointsCoordinates)
+    geojsonSource.setData(geojson)
+    this.mapbox.flyTo({
+      center: coordinates,
+      zoom: this.mapbox.getStyle().zoom + 3
     })
+    this.onPointCreated.emit(coordinates)
+  }
+
+  removeLastPoint() {
+    this.allPointsCoordinates.pop()
+    const geojson = this.createGeoJson(this.allPointsCoordinates)
+    const geojsonSource = this.mapbox.getSource('points')
+    geojsonSource.setData(geojson)
+    this.mapbox.zoomTo(3)
   }
 }

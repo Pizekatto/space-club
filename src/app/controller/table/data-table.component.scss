@@ -3,14 +3,16 @@
   bottom: 34%;
   left: 5%;
   right: 5%;
-  display: block;
+  // display: block;
   height: 450px;
+  border-radius: 20px 20px 0 0;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
 }
 header {
   display: flex;
   justify-content: space-between;
-  border-radius: 20px 20px 0 0;
-  background-color: #fafafa;
   padding: 10px;
 }
 .top {
@@ -65,9 +67,8 @@ form.add-row {
 }
 
 main {
-  height: 70%;
+  // height: 70%;
   overflow-y: auto;
-  background-color: #fafafa;
 }
 
 tr[mat-row] {
