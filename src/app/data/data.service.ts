@@ -72,4 +72,8 @@ export class DataService {
     if (!festival.date[0].start) return
     if (new Date(festival.date[0].start) > new Date()) return true
   }
+
+  saveData(data: Festival) {
+    this.festService.saveData(data)
+  }
 }

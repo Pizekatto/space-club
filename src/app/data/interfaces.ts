@@ -1,5 +1,4 @@
 import { FormControl, FormGroup } from '@angular/forms'
-import { Subject } from 'rxjs'
 
 export interface PeriodicElement {
   name: string
@@ -30,6 +29,8 @@ export interface CreateUpdateForm
       start: FormControl<Date | null>
       end: FormControl<Date | null>
     }>
+    // coordinates: FormControl<[number, number] | null>
+    coordinates: FormControl<Coordinates | null>
   }> {}
 
 export type Coordinates = Festival['coordinates']

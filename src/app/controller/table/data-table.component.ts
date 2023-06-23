@@ -1,12 +1,13 @@
 import { SelectionModel } from '@angular/cdk/collections'
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core'
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms'
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete'
 import { MatIconButton } from '@angular/material/button'
 import { MatTableDataSource } from '@angular/material/table'
 import { DataService } from '@app/data/data.service'
 import { FestivalsService } from '@app/data/festivals.service'
 import { CHIPS } from '@app/data/filters'
-import { Festival, CreateUpdateForm, GeoCodingResult } from '@app/data/interfaces'
+import { Festival, CreateUpdateForm, GeoCodingResult, Coordinates } from '@app/data/interfaces'
 import { Locations, MapService } from '@app/map/map.service'
 import { BehaviorSubject, Observable, Subject, debounceTime, map, startWith, switchMap, tap, filter } from 'rxjs'
 
@@ -44,6 +45,7 @@ export class DataTableComponent {
   places: BehaviorSubject<GeoCodingResult[]>
   placeSelected = false
   tempPoint = false
+  counter = 1
 
   @Input() mapIsReady = false
   @Output() onSelectionChange = new EventEmitter<Festival>()
@@ -65,9 +67,13 @@ export class DataTableComponent {
     this.dataSource.filterPredicate = this.filterPredicate
 
     this.createUpdateForm = this.fb.group({
-      title: this.exampleFest.title,
-      place: this.exampleFest.place,
-      date: this.fb.group(this.exampleFest.date)
+      title: this.fb.control(this.exampleFest.title + this.counter++),
+      place: this.fb.control<string | null>(null),
+      date: this.fb.group({
+        start: this.fb.control(this.exampleFest.date.start),
+        end: this.fb.control(this.exampleFest.date.end)
+      }),
+      coordinates: this.fb.control<Coordinates | null>(null)
     })
     this.dateSortRange = this.fb.group({
       start: null,
@@ -79,7 +85,18 @@ export class DataTableComponent {
     })
     this.dateSortRange.statusChanges.subscribe(v => console.log('status', v))
     this.places = new BehaviorSubject([{ place: '', point: null }])
+    this.followPlaceTitle()
+  }
 
+  ngOnInit() {
+    this.places.next([])
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.complete()
+  }
+
+  followPlaceTitle() {
     this.createUpdateForm.controls['place'].valueChanges
       .pipe(
         debounceTime(2000),
@@ -94,29 +111,30 @@ export class DataTableComponent {
       .subscribe()
   }
 
-  ngOnInit() {
-    this.places.next([])
+  addFestival(festival: Festival) {
+    console.log(festival)
+    // return
+    this.dataSource.data = [festival, ...this.dataSource.data]
+    this.closeForm()
   }
-
-  ngOnDestroy() {
-    this.unsubscribe.complete()
-  }
-
-  addData(row: Festival) {
-    this.dataSource.data = [...this.dataSource.data, row]
-  }
-  removeData(row: Festival) {}
+  removeFestival(row: Festival) {}
   add() {
     this.plus = true
-    this.createUpdateForm.setValue(this.exampleFest)
+    // this.createUpdateForm.setValue(this.exampleFest)
   }
   cancel() {
+    this.closeForm()
+  }
+
+  closeForm() {
     this.plus = false
     this.createUpdateForm.reset()
     this.placeSelected = false
+    this.tempPoint = false
   }
 
   selectRow(row: Festival) {
+    console.log(row)
     this.selection.select(row)
     this.onSelectionChange.emit(this.selection.selected[0])
   }
@@ -146,7 +164,7 @@ export class DataTableComponent {
   /** нажатие на прицел */
   selectPoint(event: MouseEvent, targetButton: MatIconButton) {
     event.stopPropagation()
-    if (this.tempPoint) {
+    if (this.tempPoint || this.placeSelected) {
       this.onCancelLastSelect.emit()
     }
     targetButton.disabled = true
@@ -154,25 +172,27 @@ export class DataTableComponent {
     this.createUpdateForm.controls['place'].disable()
     const dataStream = new Subject<[number, number]>()
     this.onTurnSelectMapMode.emit(dataStream)
-    dataStream.pipe(switchMap(coordinates => this.mapService.geoCodingGetAddress(coordinates))).subscribe(data => {
-      this.tempPoint = true
-      console.log(data)
-      let place
-      if (data.length) {
-        place = data[0].place
-      } else {
-        place = 'где-то далеко'
-      }
-      this.createUpdateForm.patchValue({ place })
-      this.placeSelected = true
-      this.createUpdateForm.controls['place'].enable()
-      targetButton.disabled = false
-    })
-  }
-
-  saveFestival(formGroup: any) {
-    console.log(formGroup)
-    console.log(formGroup.value)
+    dataStream
+      .pipe(
+        switchMap(coordinates => {
+          this.createUpdateForm.patchValue({ coordinates: [coordinates] })
+          return this.mapService.geoCodingGetAddress(coordinates)
+        })
+      )
+      .subscribe(data => {
+        this.tempPoint = true
+        console.log(data)
+        let place
+        if (data.length) {
+          place = data[0].place
+        } else {
+          place = 'где-то далеко'
+        }
+        this.createUpdateForm.patchValue({ place })
+        this.placeSelected = true
+        this.createUpdateForm.controls['place'].enable()
+        targetButton.disabled = false
+      })
   }
 
   clearPlaceField() {
@@ -186,11 +206,12 @@ export class DataTableComponent {
   }
 
   /** Выбор места из автокомплита */
-  selectPlace(place: any) {
-    console.log(place)
+  selectOption(selectOption: MatAutocompleteSelectedEvent) {
+    console.log(selectOption)
     this.placeSelected = true
-    const coordinates = this.places.getValue()[Number(place.option.id)].point.coordinates
+    const coordinates = this.places.getValue()[Number(selectOption.option.id)].point.coordinates
     this.places.next([])
+    this.createUpdateForm.patchValue({ coordinates: [coordinates] })
     this.onSelectNewPlace.emit(coordinates)
   }
 }

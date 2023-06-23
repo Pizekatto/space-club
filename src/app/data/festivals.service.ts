@@ -6,13 +6,14 @@ import { Festival } from './interfaces'
 export class FestivalsService {
   festivalss: Festival[]
   exampleFest = {
-    title: 'Фестиваль Электронной Музыки',
+    title: 'Фестиваль электронной музыки ',
     place: 'Краснодар',
     date: {
       start: new Date(2023, 6, 10),
       end: new Date(2023, 6, 15)
     }
   }
+
   constructor() {
     this.festivalss = festivals.map(el => ({
       ...el,
@@ -24,7 +25,12 @@ export class FestivalsService {
         })) || null
     }))
   }
+
   getData(): Festival[] {
     return this.festivalss
+  }
+
+  saveData(festival: Festival) {
+    console.log(festival)
   }
 }
