@@ -124,11 +124,13 @@
               (click)="clearPlaceField()">
         <mat-icon>close</mat-icon>
       </button>
-      <button type="button"
+      <div #someDiv></div>
+      <button #selectPointButton
+              type="button"
               class="select-place"
               matSuffix
               mat-icon-button
-              (click)="selectPoint($event)">
+              (click)="selectPoint($event, selectPointButton)">
         <mat-icon>my_location</mat-icon>
       </button>
     </mat-form-field>

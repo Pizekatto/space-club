@@ -1,11 +1,12 @@
 import { SelectionModel } from '@angular/cdk/collections'
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core'
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms'
+import { MatIconButton } from '@angular/material/button'
 import { MatTableDataSource } from '@angular/material/table'
 import { DataService } from '@app/data/data.service'
 import { FestivalsService } from '@app/data/festivals.service'
 import { CHIPS } from '@app/data/filters'
-import { Festival, CreateUpdateForm } from '@app/data/interfaces'
+import { Festival, CreateUpdateForm, GeoCodingResult } from '@app/data/interfaces'
 import { Locations, MapService } from '@app/map/map.service'
 import { BehaviorSubject, Observable, Subject, debounceTime, map, startWith, switchMap, tap, filter } from 'rxjs'
 
@@ -15,6 +16,7 @@ import { BehaviorSubject, Observable, Subject, debounceTime, map, startWith, swi
   styleUrls: ['./data-table.component.scss']
 })
 export class DataTableComponent {
+  unsubscribe = new Subject()
   dataSource: MatTableDataSource<Festival>
   displayedColumns: Array<keyof Festival> = ['title']
 
@@ -39,13 +41,14 @@ export class DataTableComponent {
   }
   plus = true
   exampleFest = this.festService.exampleFest
-  places: BehaviorSubject<any>
+  places: BehaviorSubject<GeoCodingResult[]>
   placeSelected = false
+  tempPoint = false
 
   @Input() mapIsReady = false
   @Output() onSelectionChange = new EventEmitter<Festival>()
   @Output() onSelectNewPlace = new EventEmitter<[number, number]>()
-  @Output() onTurnSelectMapMode = new EventEmitter<void>()
+  @Output() onTurnSelectMapMode = new EventEmitter<Subject<[number, number]>>()
   @Output() onCancelLastSelect = new EventEmitter<void>()
 
   constructor(
@@ -75,7 +78,7 @@ export class DataTableComponent {
       this.endDate = v.end
     })
     this.dateSortRange.statusChanges.subscribe(v => console.log('status', v))
-    this.places = new BehaviorSubject(1)
+    this.places = new BehaviorSubject([{ place: '', point: null }])
 
     this.createUpdateForm.controls['place'].valueChanges
       .pipe(
@@ -84,7 +87,6 @@ export class DataTableComponent {
         filter(val => !!val),
         tap(v => console.log(v)),
         switchMap((request: any) => this.mapService.geoCodingGetAddress(request)),
-        tap(console.log),
         tap(data => {
           this.places.next(data)
         })
@@ -94,6 +96,10 @@ export class DataTableComponent {
 
   ngOnInit() {
     this.places.next([])
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.complete()
   }
 
   addData(row: Festival) {
@@ -138,11 +144,30 @@ export class DataTableComponent {
   }
 
   /** нажатие на прицел */
-  selectPoint(event: MouseEvent) {
+  selectPoint(event: MouseEvent, targetButton: MatIconButton) {
     event.stopPropagation()
+    if (this.tempPoint) {
+      this.onCancelLastSelect.emit()
+    }
+    targetButton.disabled = true
     this.createUpdateForm.controls['place'].reset()
     this.createUpdateForm.controls['place'].disable()
-    this.onTurnSelectMapMode.emit()
+    const dataStream = new Subject<[number, number]>()
+    this.onTurnSelectMapMode.emit(dataStream)
+    dataStream.pipe(switchMap(coordinates => this.mapService.geoCodingGetAddress(coordinates))).subscribe(data => {
+      this.tempPoint = true
+      console.log(data)
+      let place
+      if (data.length) {
+        place = data[0].place
+      } else {
+        place = 'где-то далеко'
+      }
+      this.createUpdateForm.patchValue({ place })
+      this.placeSelected = true
+      this.createUpdateForm.controls['place'].enable()
+      targetButton.disabled = false
+    })
   }
 
   saveFestival(formGroup: any) {
@@ -157,6 +182,7 @@ export class DataTableComponent {
       this.onCancelLastSelect.emit()
     }
     this.placeSelected = false
+    this.tempPoint = false
   }
 
   /** Выбор места из автокомплита */
@@ -164,16 +190,7 @@ export class DataTableComponent {
     console.log(place)
     this.placeSelected = true
     const coordinates = this.places.getValue()[Number(place.option.id)].point.coordinates
-    console.log('вышли coordinates:', coordinates)
-
+    this.places.next([])
     this.onSelectNewPlace.emit(coordinates)
-  }
-
-  showPlacePoint(coordinates: [number, number]) {
-    this.mapService.geoCodingGetAddress(coordinates).subscribe(result => {
-      console.log(result)
-      // this.createUpdateForm.controls['place'].setValue(result[0].place)
-      this.createUpdateForm.controls['place'].enable()
-    })
   }
 }

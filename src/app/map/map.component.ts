@@ -3,6 +3,7 @@ import { ACCESS_TOKENS } from '@app/app.module'
 import { DataService } from '@app/data/data.service'
 import { AccessTokens, Coordinates, Festival } from '@app/data/interfaces'
 import mapboxgl from 'mapbox-gl'
+import { Subject } from 'rxjs'
 
 @Component({
   selector: 'app-map',
@@ -80,14 +81,15 @@ export class MapComponent {
     })
   }
 
-  addPointMode = () => {
+  addPointMode = (dataStream: Subject<[number, number]>) => {
     const canvas = this.mapbox.getCanvasContainer()
     canvas.style.cursor = 'crosshair'
     this.mapbox.once('click', (event: any) => {
-      event.preventDefault()
+      // event.preventDefault()
       const coordinates: [number, number] = [event.lngLat.lng, event.lngLat.lat]
-      console.log(coordinates)
       this.createPoint(coordinates)
+      dataStream.next(coordinates)
+      dataStream.complete()
       canvas.style.cursor = ''
     })
   }
@@ -123,7 +125,7 @@ export class MapComponent {
       center: coordinates,
       zoom: this.mapbox.getStyle().zoom + 3
     })
-    this.onPointCreated.emit(coordinates)
+    // this.onPointCreated.emit(coordinates)
   }
 
   removeLastPoint() {

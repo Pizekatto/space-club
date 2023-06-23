@@ -1,11 +1,10 @@
 <main>
   <!-- <app-table></app-table> -->
   <!-- <app-table-test></app-table-test> -->
-  <app-map (onMapLoaded)="mapIsReady = true"
-           (onPointCreated)="pointHasBeenCreated($event)"></app-map>
+  <app-map (onMapLoaded)="mapIsReady = true"></app-map>
   <app-data-table (onSelectionChange)="selectFestival($event)"
                   [mapIsReady]="mapIsReady"
                   (onSelectNewPlace)="newPoint($event)"
                   (onCancelLastSelect)="removeLastPoint()"
-                  (onTurnSelectMapMode)="turnSelectMapMode()"></app-data-table>
+                  (onTurnSelectMapMode)="turnSelectMapMode($event)"></app-data-table>
 </main>

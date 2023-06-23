@@ -48,11 +48,7 @@ export class ControllerComponent {
     this.map.removeLastPoint()
   }
 
-  turnSelectMapMode() {
-    this.map.addPointMode()
-  }
-
-  pointHasBeenCreated(coordinates: [number, number]) {
-    this.dataTable.showPlacePoint(coordinates)
+  turnSelectMapMode(dataStream: Subject<[number, number]>) {
+    this.map.addPointMode(dataStream)
   }
 }

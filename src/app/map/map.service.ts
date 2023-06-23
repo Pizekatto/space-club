@@ -38,15 +38,16 @@ export class MapService {
       params = params.set('limit', (5).toString())
     }
     params = params.set('access_token', this.accessToken)
-    console.log(url, params)
+    // console.log(url, params)
 
     return this.http.get<any>(url.toString(), { params }).pipe(
-      map(data =>
-        data.features.map((item: any) => ({
+      map(data => {
+        console.log(data)
+        return data.features.map((item: any) => ({
           place: item.place_name,
           point: item.geometry
         }))
-      )
+      })
     )
   }
 }

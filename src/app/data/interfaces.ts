@@ -1,4 +1,5 @@
 import { FormControl, FormGroup } from '@angular/forms'
+import { Subject } from 'rxjs'
 
 export interface PeriodicElement {
   name: string
