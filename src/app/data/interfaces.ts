@@ -29,7 +29,6 @@ export interface CreateUpdateForm
       start: FormControl<Date | null>
       end: FormControl<Date | null>
     }>
-    // coordinates: FormControl<[number, number] | null>
     coordinates: FormControl<Coordinates | null>
   }> {}
 

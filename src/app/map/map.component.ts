@@ -74,11 +74,12 @@ export class MapComponent {
     return geoJson
   }
 
-  async selectPoint(point: Coordinates) {
+  selectPoint(point: Coordinates) {
     console.log(point)
     if (!this.mapLoaded) return
     this.mapbox.flyTo({
-      center: point[0]
+      center: point[0],
+      zoom: 3
     })
   }
 

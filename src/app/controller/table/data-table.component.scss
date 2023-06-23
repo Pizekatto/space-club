@@ -70,6 +70,9 @@ main {
   // height: 70%;
   overflow-y: auto;
 }
+.date-chip {
+  margin-right: 10px;
+}
 
 tr[mat-row] {
   &:hover {

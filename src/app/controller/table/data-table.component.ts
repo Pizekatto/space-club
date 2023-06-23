@@ -19,12 +19,13 @@ import { BehaviorSubject, Observable, Subject, debounceTime, map, startWith, swi
 export class DataTableComponent {
   unsubscribe = new Subject()
   dataSource: MatTableDataSource<Festival>
-  displayedColumns: Array<keyof Festival> = ['title']
+  displayedColumns: Array<keyof Festival> = ['title', 'date']
 
   titles: { [key in keyof Festival]: string } = {
     title: 'Фестивали',
     website: 'Сайт',
-    coordinates: 'Координаты'
+    coordinates: 'Координаты',
+    date: 'Даты'
   }
   initialSelection = []
   allowMultiSelect = false
@@ -67,7 +68,7 @@ export class DataTableComponent {
     this.dataSource.filterPredicate = this.filterPredicate
 
     this.createUpdateForm = this.fb.group({
-      title: this.fb.control(this.exampleFest.title + this.counter++),
+      title: this.fb.control(this.exampleFest.title + this.counter),
       place: this.fb.control<string | null>(null),
       date: this.fb.group({
         start: this.fb.control(this.exampleFest.date.start),
@@ -111,19 +112,29 @@ export class DataTableComponent {
       .subscribe()
   }
 
-  addFestival(festival: Festival) {
-    console.log(festival)
-    // return
-    this.dataSource.data = [festival, ...this.dataSource.data]
+  addFestival(festival: any) {
+    const fest: Festival = { ...festival, date: [festival.date] }
+    console.log(fest)
+    this.dataSource.data = [fest, ...this.dataSource.data]
     this.closeForm()
   }
+
   removeFestival(row: Festival) {}
+
   add() {
     this.plus = true
-    // this.createUpdateForm.setValue(this.exampleFest)
+    this.createUpdateForm.patchValue({
+      title: this.exampleFest.title + ++this.counter,
+      date: {
+        start: this.exampleFest.date.start,
+        end: this.exampleFest.date.end
+      }
+    })
   }
+
   cancel() {
     this.closeForm()
+    this.counter--
   }
 
   closeForm() {
