@@ -38,14 +38,16 @@ mat-form-field.datepicker {
   height: 100%;
 }
 section.middle {
-  background-color: #fafafa;
   text-align: center;
+  &:hover {
+    cursor: pointer;
+  }
 }
-form.add-row {
+form {
   padding: 0 10px;
   display: flex;
+  flex-grow: 1;
   align-items: center;
-  justify-content: space-between;
   & > * {
     margin-right: 10px;
   }
@@ -54,7 +56,6 @@ form.add-row {
   &-title {
     flex-grow: 1;
     min-width: 150px;
-    max-width: 350px;
   }
   &-place {
     flex-grow: 4;
@@ -70,16 +71,57 @@ main {
   // height: 70%;
   overflow-y: auto;
 }
+table {
+  width: 100%;
+}
 .date-chip {
   margin-right: 10px;
 }
 
-tr[mat-row] {
+button.btn-table-controls {
+  visibility: hidden;
+}
+
+mat-row.table-row {
+  position: relative;
   &:hover {
     cursor: pointer;
+    // mat-cell.x-column {
+    //   z-index: 0;
+    //   opacity: 1;
+    // }
   }
 }
 
 a {
   text-decoration: none;
+}
+
+.mat-mdc-header-cell,
+.mat-mdc-cell {
+  flex: 0 1 auto;
+}
+
+.mat-column {
+  &-title {
+    height: 56px;
+  }
+  &-title {
+    flex-grow: 1;
+  }
+  &-date {
+    width: 350px;
+  }
+  &-controls {
+    width: 120px;
+  }
+  &-edit {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    padding: 0;
+    // opacity: 0;
+    // transition: opacity 0.1s ease-out;
+  }
 }

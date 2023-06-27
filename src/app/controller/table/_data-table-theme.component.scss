@@ -23,6 +23,17 @@
   .select-place:hover {
     color: deeppink;
   }
+  button.btn-table-controls {
+    color: #b5b5b5;
+    &:hover {
+      color: mat.get-color-from-palette($primary-palette, 'A200');
+    }
+  }
+  section.middle:hover {
+    button.plus {
+      color: deeppink;
+    }
+  }
 }
 
 @mixin typography($theme) {

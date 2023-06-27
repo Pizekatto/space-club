@@ -93,4 +93,15 @@ mat-chip-listbox > div.mdc-evolution-chip-set__chips {
   flex-flow: row nowrap;
 }
 
+mat-row {
+  &:hover {
+    & button.btn-table-controls {
+      visibility: visible;
+    }
+  }
+  &.table-edit-row {
+    height: 0;
+  }
+}
+
 // data-table.component ---

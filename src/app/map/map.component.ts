@@ -75,7 +75,6 @@ export class MapComponent {
   }
 
   selectPoint(point: Coordinates) {
-    console.log(point)
     if (!this.mapLoaded) return
     this.mapbox.flyTo({
       center: point[0],

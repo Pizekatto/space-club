@@ -42,3 +42,8 @@ export interface GeoCodingResult {
   place: string
   point: any
 }
+
+export type TableColumns = keyof Festival
+export type TableHeaderTitles = {
+  [key in TableColumns]: string
+}
