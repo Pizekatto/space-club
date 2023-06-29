@@ -157,10 +157,8 @@
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>
-    <mat-form-field *ngIf="!updateMode"
-                    class="inputs-place"
-                    subscriptSizing="dynamic"
-                    required>
+    <mat-form-field class="inputs-place"
+                    subscriptSizing="dynamic">
       <mat-label>Место</mat-label>
       <input #placeInput
              matInput
@@ -183,7 +181,8 @@
         <mat-icon>close</mat-icon>
       </button>
       <div #someDiv></div>
-      <button #selectPointButton
+      <button *ngIf="!updateMode"
+              #selectPointButton
               type="button"
               class="select-place"
               matSuffix

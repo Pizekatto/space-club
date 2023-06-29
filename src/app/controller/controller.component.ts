@@ -51,4 +51,12 @@ export class ControllerComponent {
   turnSelectMapMode(dataStream: Subject<[number, number]>) {
     this.map.addPointMode(dataStream)
   }
+
+  removePoint(i: number) {
+    this.map.removePoint(i)
+  }
+
+  afterSaveFestival() {
+    this.map.afterSave()
+  }
 }

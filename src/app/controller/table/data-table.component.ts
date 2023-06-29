@@ -17,7 +17,18 @@ import {
   DateRange
 } from '@app/data/interfaces'
 import { Locations, MapService } from '@app/map/map.service'
-import { BehaviorSubject, Observable, Subject, debounceTime, map, startWith, switchMap, tap, filter } from 'rxjs'
+import {
+  BehaviorSubject,
+  Observable,
+  Subject,
+  debounceTime,
+  map,
+  startWith,
+  switchMap,
+  tap,
+  filter,
+  distinctUntilChanged
+} from 'rxjs'
 import { animate, state, style, transition, trigger } from '@angular/animations'
 import { MatChipListbox, MatChipOption } from '@angular/material/chips'
 
@@ -74,6 +85,8 @@ export class DataTableComponent {
   @Output() onSelectNewPlace = new EventEmitter<[number, number]>()
   @Output() onTurnSelectMapMode = new EventEmitter<Subject<[number, number]>>()
   @Output() onCancelLastSelect = new EventEmitter<void>()
+  @Output() onRemoveFestival = new EventEmitter<number>()
+  @Output() onSaveFestival = new EventEmitter<void>()
   @ViewChild('plus') plusBtn!: MatButton
   @ViewChild('dateRangeChip') dateRangeChip!: MatChipOption
   @ViewChild('dateChipListBox') dateChipListBox!: MatChipListbox
@@ -129,6 +142,7 @@ export class DataTableComponent {
     this.createUpdateForm.controls['place'].valueChanges
       .pipe(
         debounceTime(2000),
+        distinctUntilChanged(),
         filter(_ => !this.placeSelected),
         filter(val => !!val),
         tap(v => console.log(v)),
@@ -146,10 +160,10 @@ export class DataTableComponent {
     console.log(fest)
     this.dataSource.data = [fest, ...this.dataSource.data]
     this.closeForm()
+    this.onSaveFestival.emit()
   }
 
   update = (festival: any, event: MouseEvent, row: Festival) => {
-    console.log(event)
     event.preventDefault()
     console.log(festival)
     const i = this.dataSource.data.findIndex(item => item == row)
@@ -171,8 +185,6 @@ export class DataTableComponent {
     this.editableRow = null
     this.plusBtn.disabled = false
   }
-
-  removeFestival(row: Festival) {}
 
   add() {
     if (this.plus) {
@@ -201,27 +213,43 @@ export class DataTableComponent {
     event.stopPropagation()
     this.editableRow = null
     this.plusBtn.disabled = false
+    this.closeForm()
+    this.places.next([])
   }
 
   edit(event: MouseEvent, row: Festival) {
     // event.stopPropagation()
-    // console.log(row)
+    console.log(row)
     this.editableRow = row
     // console.log('Edit')
     this.plusBtn.disabled = true
+    console.log(this.createUpdateForm.value)
     this.createUpdateForm.patchValue({
       title: row.title,
+      coordinates: row.coordinates,
       date: {
         start: row.date ? row.date[0].start : null,
         end: row.date ? row.date[0].end : null
       }
     })
+    if (!this.createUpdateForm.value.place) {
+      this.mapService.geoCodingGetAddress(row.coordinates[0]).subscribe(v => {
+        this.createUpdateForm.patchValue({
+          place: v[0].place
+        })
+      })
+    }
   }
 
   delete(event: MouseEvent, row: Festival) {
     event.stopPropagation()
     // console.log('Delete')
-    this.dataSource.data = this.dataSource.data.filter(item => item != row)
+    const i = this.dataSource.data.findIndex(item => item === row)
+    console.log('index', i)
+    console.log('data', structuredClone(this.dataSource.data))
+    this.dataSource.data = this.dataSource.data.filter((_, index) => index != i)
+    // this.dataSource.data = this.dataSource.data.filter(item => item !== row)
+    this.onRemoveFestival.emit(i)
   }
 
   closeForm() {

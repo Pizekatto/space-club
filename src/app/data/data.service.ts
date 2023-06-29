@@ -57,7 +57,11 @@ export class DataService {
     if (!festival.date[0].start || !dateRange.start) return false
     const festStart = festival.date[0].start
     const festEnd = festival.date[festival.date.length - 1].end
-    return festStart >= dateRange.start && Boolean(festEnd && dateRange.end && festEnd <= dateRange.end)
+
+    return Boolean(
+      (festStart >= dateRange.start && dateRange.end && festStart <= dateRange.end) ||
+        (festEnd && dateRange.end && festEnd >= dateRange.start && festEnd <= dateRange.end)
+    )
   }
 
   russiaFilter() {

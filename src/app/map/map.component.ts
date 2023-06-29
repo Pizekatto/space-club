@@ -118,7 +118,7 @@ export class MapComponent {
   }
 
   createPoint = (coordinates: [number, number]) => {
-    this.allPointsCoordinates.push(coordinates)
+    this.allPointsCoordinates.unshift(coordinates)
     const geojsonSource = this.mapbox.getSource('points')
     const geojson = this.createGeoJson(this.allPointsCoordinates)
     geojsonSource.setData(geojson)
@@ -131,9 +131,24 @@ export class MapComponent {
 
   removeLastPoint() {
     this.allPointsCoordinates.pop()
+    this.refreshPoints()
+    this.mapbox.zoomTo(3)
+  }
+
+  refreshPoints() {
     const geojson = this.createGeoJson(this.allPointsCoordinates)
     const geojsonSource = this.mapbox.getSource('points')
     geojsonSource.setData(geojson)
+  }
+
+  removePoint(i: number) {
+    console.log([...this.allPointsCoordinates])
+    console.log(this.allPointsCoordinates[i])
+    this.allPointsCoordinates = this.allPointsCoordinates.filter((_, index) => index != i)
+    this.refreshPoints()
+  }
+
+  afterSave() {
     this.mapbox.zoomTo(3)
   }
 }

@@ -6,5 +6,7 @@
                   [mapIsReady]="mapIsReady"
                   (onSelectNewPlace)="newPoint($event)"
                   (onCancelLastSelect)="removeLastPoint()"
-                  (onTurnSelectMapMode)="turnSelectMapMode($event)"></app-data-table>
+                  (onTurnSelectMapMode)="turnSelectMapMode($event)"
+                  (onSaveFestival)="afterSaveFestival()"
+                  (onRemoveFestival)="removePoint($event)"></app-data-table>
 </main>

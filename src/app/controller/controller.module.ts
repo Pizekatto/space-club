@@ -14,7 +14,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/mat
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatIconModule } from '@angular/material/icon'
 import { MatDatepickerModule } from '@angular/material/datepicker'
-import { MatNativeDateModule } from '@angular/material/core'
+import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core'
 import { MatChipsModule } from '@angular/material/chips'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
 
@@ -44,6 +44,11 @@ import { MapModule } from '@app/map/map.module'
     MatChipsModule,
     MatAutocompleteModule
   ],
-  providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } }]
+  providers: [
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: { appearance: 'outline' }
+    }
+  ]
 })
 export class ControllerModule {}
