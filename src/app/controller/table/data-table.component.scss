@@ -19,8 +19,9 @@ header {
   display: flex;
   justify-content: space-between;
 }
-mat-chip-listbox.left {
-  overflow-x: hidden;
+.left {
+  display: flex;
+  // overflow-x: hidden;
   align-items: center;
 }
 .date-container {
@@ -39,9 +40,6 @@ mat-form-field.datepicker {
 }
 section.middle {
   text-align: center;
-  &:hover {
-    cursor: pointer;
-  }
 }
 form {
   padding: 0 10px;
@@ -75,7 +73,9 @@ table {
   width: 100%;
 }
 .date-chip {
-  margin-right: 10px;
+  &:not(:last-child) {
+    margin-right: 10px;
+  }
 }
 
 button.btn-table-controls {
@@ -110,7 +110,7 @@ a {
     flex-grow: 1;
   }
   &-date {
-    width: 350px;
+    width: 500px;
   }
   &-controls {
     width: 120px;

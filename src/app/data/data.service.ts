@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Festival, PeriodicElement } from './interfaces'
+import { FestDate, Festival, PeriodicElement } from './interfaces'
 import { Coordinates } from '@app/data/interfaces'
 
 import data from './data.json'
@@ -10,8 +10,9 @@ import { Locations } from '@app/map/map.service'
 export class DataService {
   ELEMENT_DATA: PeriodicElement[] = [...data]
   allFestivalsCoordinates: Coordinates // [lng, lat]
-  filterFunctions: Record<string, (f: Festival) => boolean | void> = {
+  filterFunctions: Record<string, (f: Festival, dateRange: Partial<FestDate>) => boolean | void> = {
     date: this.dateFilter,
+    range: this.rangeFilter,
     [Locations.russia]: this.russiaFilter,
     [Locations.europe]: this.europeFilter,
     [Locations.asia]: this.asiaFilter,
@@ -46,8 +47,17 @@ export class DataService {
   }
 
   dateFilter(festival: Festival) {
-    if (!festival.date) return false
+    if (!festival.date) return
     return true
+  }
+
+  rangeFilter(festival: Festival, dateRange: Partial<FestDate>) {
+    if (!dateRange.start && !dateRange.end) return true
+    if (!festival.date) return false
+    if (!festival.date[0].start || !dateRange.start) return false
+    const festStart = festival.date[0].start
+    const festEnd = festival.date[festival.date.length - 1].end
+    return festStart >= dateRange.start && Boolean(festEnd && dateRange.end && festEnd <= dateRange.end)
   }
 
   russiaFilter() {
@@ -62,15 +72,17 @@ export class DataService {
   americaFilter() {
     return true
   }
-  passedFilter(festival: Festival): boolean | void {
+  passedFilter(festival: Festival) {
     if (!festival.date) return
     if (!festival.date[0].start) return
-    if (new Date(festival.date[0].start) < new Date()) return true
+    if (festival.date[0].start < new Date()) return true
+    return
   }
-  notPassedFilter(festival: Festival): boolean | void {
+  notPassedFilter(festival: Festival) {
     if (!festival.date) return
     if (!festival.date[0].start) return
-    if (new Date(festival.date[0].start) > new Date()) return true
+    if (festival.date[0].start > new Date()) return true
+    return
   }
 
   saveData(data: Festival) {

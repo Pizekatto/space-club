@@ -1,4 +1,4 @@
-import { InjectionToken, NgModule } from '@angular/core'
+import { InjectionToken, LOCALE_ID, NgModule } from '@angular/core'
 import { BrowserModule } from '@angular/platform-browser'
 
 import { AppRoutingModule } from './app-routing.module'
@@ -8,8 +8,12 @@ import { DataModule } from './data/data.module'
 import { ControllerModule } from './controller/controller.module'
 import { environment } from 'src/environments/environments'
 import { AccessTokens } from './data/interfaces'
+import { registerLocaleData } from '@angular/common'
+import localeRu from '@angular/common/locales/ru'
 
 export const ACCESS_TOKENS = new InjectionToken<AccessTokens>('access tokens')
+
+registerLocaleData(localeRu)
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,7 +22,8 @@ export const ACCESS_TOKENS = new InjectionToken<AccessTokens>('access tokens')
     {
       provide: ACCESS_TOKENS,
       useValue: { mapbox: environment.mapboxgl.accessToken }
-    }
+    },
+    { provide: LOCALE_ID, useValue: 'ru' }
   ],
   bootstrap: [AppComponent]
 })

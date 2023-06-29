@@ -8,7 +8,7 @@ export interface PeriodicElement {
   description: string
 }
 
-interface FestDate {
+export interface FestDate {
   start: Date | null
   end: Date | null
 }
@@ -30,6 +30,12 @@ export interface CreateUpdateForm
       end: FormControl<Date | null>
     }>
     coordinates: FormControl<Coordinates | null>
+  }> {}
+
+export interface DateRange
+  extends FormGroup<{
+    start: FormControl<Date | null>
+    end: FormControl<Date | null>
   }> {}
 
 export type Coordinates = Festival['coordinates']

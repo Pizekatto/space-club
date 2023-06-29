@@ -13,11 +13,13 @@ import {
   GeoCodingResult,
   Coordinates,
   TableColumns,
-  TableHeaderTitles
+  TableHeaderTitles,
+  DateRange
 } from '@app/data/interfaces'
 import { Locations, MapService } from '@app/map/map.service'
 import { BehaviorSubject, Observable, Subject, debounceTime, map, startWith, switchMap, tap, filter } from 'rxjs'
 import { animate, state, style, transition, trigger } from '@angular/animations'
+import { MatChipListbox, MatChipOption } from '@angular/material/chips'
 
 @Component({
   selector: 'app-data-table',
@@ -47,16 +49,17 @@ export class DataTableComponent {
   allowMultiSelect = false
   selection: SelectionModel<Festival>
   editableRow: Festival | null = null
-  dateSortRange: FormGroup
+  dateSortRange: DateRange
   createUpdateForm: CreateUpdateForm
-  startDate? = ''
-  endDate? = ''
   CHIPS = CHIPS
-  selectedFilters = [...this.CHIPS.map(el => el.value)]
+  selectedFilters: string[] = []
   _filters: Locations[] = []
-  set filters(value: Locations[]) {
+  set filters(value) {
     this._filters = value
     this.filter(value.reduce<string>((acc, item) => acc + '.' + item, ''))
+  }
+  get filters() {
+    return this._filters
   }
   plus = false
   exampleFest = this.festService.exampleFest
@@ -64,6 +67,7 @@ export class DataTableComponent {
   placeSelected = false
   tempPoint = false
   counter = 1
+  dateSortRangeValid = false
 
   @Input() mapIsReady = false
   @Output() onSelectionChange = new EventEmitter<Festival>()
@@ -71,6 +75,8 @@ export class DataTableComponent {
   @Output() onTurnSelectMapMode = new EventEmitter<Subject<[number, number]>>()
   @Output() onCancelLastSelect = new EventEmitter<void>()
   @ViewChild('plus') plusBtn!: MatButton
+  @ViewChild('dateRangeChip') dateRangeChip!: MatChipOption
+  @ViewChild('dateChipListBox') dateChipListBox!: MatChipListbox
 
   constructor(
     private dataService: DataService,
@@ -95,16 +101,20 @@ export class DataTableComponent {
       coordinates: this.fb.control<Coordinates | null>(null)
     })
     this.dateSortRange = this.fb.group({
-      start: null,
-      end: null
+      start: this.fb.control<Date | null>(null),
+      end: this.fb.control<Date | null>(null)
     })
-    this.dateSortRange.valueChanges.subscribe(v => {
-      this.startDate = v.start
-      this.endDate = v.end
-    })
-    this.dateSortRange.statusChanges.subscribe(v => console.log('status', v))
     this.places = new BehaviorSubject([{ place: '', point: null }])
     this.followPlaceTitle()
+
+    this.dateSortRange.statusChanges.subscribe(s => {
+      // console.log('event status', s)
+      // console.log('dateSortRange status', 'valid', this.dateSortRange.valid)
+      const status = s == 'VALID' ? true : false
+      this.dateSortRangeValid = status
+      this.dateRangeChip.selected = status
+      this.dateRangeChip.selectionChange.emit({ source: this.dateRangeChip, selected: status, isUserInput: true })
+    })
   }
 
   ngOnInit() {
@@ -227,17 +237,13 @@ export class DataTableComponent {
     this.onSelectionChange.emit(this.selection.selected[0])
   }
 
-  logging(v: any) {
-    console.log(v)
-  }
-
   filterPredicate = (data: Festival, filterString: string): boolean => {
-    console.log('фильтр предикат', filterString)
+    // console.log('фильтр предикат', filterString)
 
     let currentFilters = filterString.split('.').slice(1)
     let result = false
     for (let i = 0; i < currentFilters.length; i++) {
-      if (this.dataService.filterFunctions[currentFilters[i]](data)) {
+      if (this.dataService.filterFunctions[currentFilters[i]](data, this.dateSortRange.value)) {
         result = true
         break
       }
@@ -301,5 +307,9 @@ export class DataTableComponent {
     this.places.next([])
     this.createUpdateForm.patchValue({ coordinates: [coordinates] })
     this.onSelectNewPlace.emit(coordinates)
+  }
+
+  logging(v: any) {
+    console.log(v)
   }
 }

@@ -1,18 +1,18 @@
 import { Locations } from '@app/map/map.service'
 
 export const CHIPS = [
-  {
-    title: 'Россия',
-    value: Locations.russia
-  },
-  {
-    title: 'Америка',
-    value: Locations.america
-  },
-  {
-    title: 'Европа',
-    value: Locations.europe
-  },
+  // {
+  //   title: 'Россия',
+  //   value: Locations.russia
+  // },
+  // {
+  //   title: 'Америка',
+  //   value: Locations.america
+  // },
+  // {
+  //   title: 'Европа',
+  //   value: Locations.europe
+  // },
   {
     title: 'Прошли',
     value: 'passed'

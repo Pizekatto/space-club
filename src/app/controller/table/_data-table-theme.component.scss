@@ -29,10 +29,8 @@
       color: mat.get-color-from-palette($primary-palette, 'A200');
     }
   }
-  section.middle:hover {
-    button.plus {
-      color: deeppink;
-    }
+  button.plus:hover {
+    color: deeppink;
   }
 }
 

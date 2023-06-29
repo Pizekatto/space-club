@@ -1,22 +1,33 @@
 <header>
-  <mat-chip-listbox class="left"
-                    selectable
-                    multiple
-                    (change)="filters = $event.value">
-    <mat-chip-option *ngFor="let chip of CHIPS"
-                     disableRipple
-                     [value]="chip.value"
-                     selected="selectedFilters.includes(chip.value)">
-      {{chip.title}}
-    </mat-chip-option>
-    <mat-chip>{{startDate | date}} - {{endDate | date}}
-    </mat-chip>
-  </mat-chip-listbox>
+  <div class="left">
+    <mat-chip-listbox #dateChipListBox
+                      selectable
+                      multiple
+                      (change)="filters = $event.value">
+      <mat-chip-option *ngFor="let chip of CHIPS"
+                       disableRipple
+                       [value]="chip.value"
+                       [selected]="selectedFilters.includes(chip.value)">
+        {{chip.title}}
+      </mat-chip-option>
+      <mat-chip-option #dateRangeChip
+                       [disabled]="!dateSortRangeValid"
+                       removable
+                       value="range">
+        {{(dateSortRange.controls['start'].value | date:'d MMM yyyy') || 'начало' }} &mdash;
+        {{(dateSortRange.controls['end'].value |
+        date:'d MMM yyyy') || 'конец'}}
+        <button matChipRemove
+                class="date-range-chip-remove-btn"
+                (click)="dateSortRange.reset()">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip-option>
+    </mat-chip-listbox>
+
+  </div>
 
   <div class="right">
-    <!-- <button mat-button
-            color="warn"
-            (click)="clearDates()">Очистить даты</button> -->
     <mat-datepicker-toggle matIconSuffix
                            [for]="picker">
     </mat-datepicker-toggle>
@@ -25,25 +36,26 @@
     <mat-form-field class="datepicker"
                     subscriptSizing="dynamic">
       <mat-date-range-input [formGroup]="dateSortRange"
-                            [rangePicker]="picker"
-                            empty="true">
+                            [rangePicker]="picker">
         <input matStartDate
-               formControlName="start">
+               formControlName="start"
+               required>
         <input matEndDate
-               formControlName="end">
+               formControlName="end"
+               required>
       </mat-date-range-input>
     </mat-form-field>
 
   </div>
 
 </header>
-<section class="middle"
-         (click)="add()">
+<section class="middle">
   <button #plus
           class="plus"
           *ngIf="!plus; else addForm"
           mat-icon-button
-          color="primary">
+          color="primary"
+          (click)="add()">
     <mat-icon>add_circle_outline</mat-icon>
   </button>
   <ng-template #addForm>
@@ -79,7 +91,7 @@
               <mat-chip disableRipple
                         class="date-chip"
                         *ngFor="let date of row[key]; let i = index">
-                {{ date.start | date:'shortDate' }} &mdash; {{ date.end | date:'shortDate' }}
+                {{ date.start | date:'d MMM yyyy' }} &mdash; {{ date.end | date:'d MMM yyyy' }}
               </mat-chip>
             </ng-container>
           </mat-cell>
