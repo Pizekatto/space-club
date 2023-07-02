@@ -1,3 +1,4 @@
+<!-- <div class="logo">space club</div> -->
 <header>
   <div class="left">
     <mat-chip-listbox #dateChipListBox
@@ -54,9 +55,9 @@
           class="plus"
           *ngIf="!plus; else addForm"
           mat-icon-button
-          color="primary"
-          (click)="add()">
-    <mat-icon>add_circle_outline</mat-icon>
+          (click)="add()"
+          color="primary">
+    <mat-icon svgIcon="plus"></mat-icon>
   </button>
   <ng-template #addForm>
     <ng-container
@@ -79,14 +80,16 @@
       </ng-container>
       <ng-container [ngSwitch]="key">
         <ng-container *ngSwitchCase="'title'">
-          <mat-cell *matCellDef="let row">
+          <mat-cell *matCellDef="let row"
+                    [@editHide]="editableRow != row ? 'show' : 'hide'">
             <a [href]="row.website || '#'"
                [target]="row.website ? '_blank' : '_self'">{{row[key]}}
             </a>
           </mat-cell>
         </ng-container>
         <ng-container *ngSwitchCase="'date'">
-          <mat-cell *matCellDef="let row">
+          <mat-cell *matCellDef="let row"
+                    [@editHide]="editableRow != row ? 'show' : 'hide'">
             <ng-container *ngIf="row[key] && row[key][0].start">
               <mat-chip disableRipple
                         class="date-chip"
@@ -102,16 +105,19 @@
     <ng-container matColumnDef="controls">
       <mat-header-cell *matHeaderCellDef>&nbsp;</mat-header-cell>
       <mat-cell *matCellDef="let row">
-        <button mat-icon-button
-                class="btn-table-controls"
-                (click)="edit($event, row)">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button
-                class="btn-table-controls"
-                (click)="delete($event, row)">
-          <mat-icon>delete</mat-icon>
-        </button>
+        <div class="btn-table-controls"
+             [@editHide]="editableRow != row ? 'show' : 'hide'">
+          <button mat-icon-button
+                  class="control"
+                  (click)="edit($event, row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button
+                  class="control delete"
+                  (click)="delete($event, row)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
       </mat-cell>
     </ng-container>
 
@@ -126,7 +132,7 @@
       </mat-cell>
     </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumnsWithControls; sticky: true"></mat-header-row>
+    <mat-header-row *matHeaderRowDef="displayedColumnsWithControls"></mat-header-row>
     <mat-row class="table-row"
              *matRowDef="let row; columns: displayedColumnsWithControls;"
              (click)="selectRow(row)">
@@ -178,7 +184,7 @@
               matSuffix
               mat-icon-button
               (click)="clearPlaceField()">
-        <mat-icon>close</mat-icon>
+        <mat-icon svgIcon="close"></mat-icon>
       </button>
       <div #someDiv></div>
       <button *ngIf="!updateMode"
@@ -188,7 +194,7 @@
               matSuffix
               mat-icon-button
               (click)="selectPoint($event, selectPointButton)">
-        <mat-icon>my_location</mat-icon>
+        <mat-icon svgIcon="location"></mat-icon>
       </button>
     </mat-form-field>
     <mat-form-field subscriptSizing="dynamic">
@@ -213,15 +219,15 @@
       <mat-date-range-picker #picker></mat-date-range-picker>
     </mat-form-field>
     <button mat-icon-button
-            color="primary"
+            class="save"
             [disabled]="createUpdateForm.invalid">
-      <mat-icon>done</mat-icon>
+      <mat-icon svgIcon="save"></mat-icon>
     </button>
     <button type="button"
+            class="cancel"
             mat-icon-button
-            color="warn"
             (click)="cancel($event)">
-      <mat-icon>cancel</mat-icon>
+      <mat-icon svgIcon="cancel"></mat-icon>
     </button>
   </form>
 

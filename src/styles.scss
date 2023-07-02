@@ -15,20 +15,14 @@ body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
-$my-primary: mat.define-palette(mat.$indigo-palette);
-$my-accent: mat.define-palette(mat.$pink-palette);
-$my-warn: mat.define-palette(mat.$red-palette);
-$my-color-config: (
-  primary: $my-primary,
-  accent: $my-accent,
-  warn: $my-warn
-);
-$my-typography: mat.define-typography-config();
-
 $light-theme: mat.define-light-theme(
   (
-    color: $my-color-config,
-    typography: $my-typography,
+    color: (
+      primary: mat.define-palette(mat.$deep-orange-palette),
+      accent: mat.define-palette(mat.$deep-purple-palette),
+      warn: mat.define-palette(mat.$pink-palette)
+    ),
+    typography: mat.define-typography-config(),
     density: -1
   )
 );
@@ -37,14 +31,15 @@ $dark-theme: mat.define-dark-theme(
   (
     color: (
       primary: mat.define-palette(mat.$pink-palette),
-      accent: mat.define-palette(mat.$blue-grey-palette)
+      accent: mat.define-palette(mat.$purple-palette),
+      warn: mat.define-palette(mat.$pink-palette)
     )
   )
 );
 
 @include mat.core();
 @include mat.core-theme($light-theme);
-@include mat.typography-hierarchy($my-typography);
+@include mat.typography-hierarchy(mat.define-typography-config());
 
 @include mat.button-theme($light-theme);
 @include mat.table-theme($light-theme);
@@ -57,11 +52,12 @@ $dark-theme: mat.define-dark-theme(
 @include mat.icon-button-theme($light-theme);
 @include mat.icon-theme($light-theme);
 @include mat.autocomplete-theme($light-theme);
+@include mat.fab-theme($light-theme);
 @include data-table.theme($light-theme);
 
 @include mat.form-field-density(-3);
 @include mat.input-density(-3);
-@include mat.button-density(-3);
+@include mat.button-density(0);
 @include mat.icon-density(-3);
 
 @media (prefers-color-scheme: dark) {
@@ -77,14 +73,19 @@ $dark-theme: mat.define-dark-theme(
   @include mat.icon-button-color($dark-theme);
   @include mat.icon-color($dark-theme);
   @include mat.autocomplete-color($dark-theme);
-  @include data-table.theme($dark-theme);
+  @include mat.fab-color($dark-theme);
+  @include data-table.dark-color($dark-theme);
 }
 
-// .mat-date-range-input-container {
-//   display: none !important;
-// }
+.mat-mdc-table {
+  background-color: transparent;
+}
 
 // --- data-table.component
+div.right div.mat-mdc-form-field-flex {
+  display: none;
+}
+
 .mat-mdc-form-field-icon-suffix {
   display: flex;
 }
@@ -95,7 +96,7 @@ mat-chip-listbox > div.mdc-evolution-chip-set__chips {
 
 mat-row {
   &:hover {
-    & button.btn-table-controls {
+    & .btn-table-controls {
       visibility: visible;
     }
   }
@@ -103,9 +104,5 @@ mat-row {
     height: 0;
   }
 }
-
-// button[matChipRemove].date-range-chip-remove-btn:hover {
-//   color: #3affb8;
-// }
 
 // data-table.component ---

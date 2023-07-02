@@ -130,7 +130,7 @@ export class MapComponent {
   }
 
   removeLastPoint() {
-    this.allPointsCoordinates.pop()
+    this.allPointsCoordinates.shift()
     this.refreshPoints()
     this.mapbox.zoomTo(3)
   }

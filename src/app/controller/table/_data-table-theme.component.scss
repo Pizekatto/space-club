@@ -1,36 +1,128 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 
-@mixin color($theme) {
+@mixin ligth-color($theme) {
   $color-config: mat.get-color-config($theme);
   $primary-palette: map.get($color-config, 'primary');
   $accent-palette: map.get($color-config, 'accent');
 
+  app-data-table {
+    background-color: rgba(255, 255, 255, 0.4);
+    &::before {
+      color: #737373;
+      text-shadow: -1px -1px 2px #737373;
+    }
+  }
+  form {
+    color: #333;
+  }
   a {
     color: mat.get-color-from-palette($primary-palette, '50-contrast');
     &:hover {
       color: deeppink;
     }
   }
-  tr[mat-row].table-row {
+  .logo {
+    color: rgba(0, 0, 0, 0.8);
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.4);
+  }
+  .mat-mdc-table mat-row.mat-mdc-row {
     &:hover {
-      background: whitesmoke;
+      background-color: rgba(255, 255, 255, 0.07);
     }
     &:active {
-      background: #efefef;
+      background-color: rgba(255, 255, 255, 0.15);
     }
   }
-  .select-place:hover {
-    color: deeppink;
+
+  .mdc-icon-button.mat-mdc-icon-button {
+    &.select-place {
+      &:hover {
+        color: mat.get-color-from-palette($primary-palette, 500);
+      }
+    }
+    &.plus:not([disabled]) {
+      color: #00b729;
+      &:hover {
+        color: #009120;
+      }
+    }
+    &.save:not([disabled]) {
+      color: #009d23;
+    }
+    &.cancel:not([disabled]) {
+      color: #e30000;
+    }
+    &.control {
+      color: #bdbdbd;
+      &.delete:hover {
+        color: #e30000;
+      }
+    }
   }
-  button.btn-table-controls {
-    color: #b5b5b5;
+}
+
+@mixin dark-color($theme) {
+  $color-config: mat.get-color-config($theme);
+  $primary-palette: map.get($color-config, 'primary');
+  $accent-palette: map.get($color-config, 'accent');
+
+  app-data-table {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    &::before {
+      color: #b7b7b7;
+      text-shadow: -1px -1px 2px #2f2e2e;
+    }
+  }
+  form {
+    color: #fff;
+  }
+
+  a {
+    color: white;
+  }
+  .logo {
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.4);
+  }
+  mat-row.mat-mdc-row {
     &:hover {
-      color: mat.get-color-from-palette($primary-palette, 'A200');
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+    &:active {
+      background-color: rgba(0, 0, 0, 0.1);
     }
   }
-  button.plus:hover {
-    color: deeppink;
+
+  .mat-mdc-cell {
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .mdc-icon-button.mat-mdc-icon-button {
+    &.select-place {
+      &:hover {
+        color: mat.get-color-from-palette($primary-palette, 500);
+      }
+    }
+    &.plus:not([disabled]) {
+      color: #00b729;
+      &:hover {
+        color: #00e733;
+      }
+    }
+    &.save:not([disabled]) {
+      color: #00ff39;
+    }
+    &.cancel:not([disabled]) {
+      color: #ff0000;
+    }
+    &.control {
+      color: #bdbdbd;
+      &.delete:hover {
+        color: #ff0000;
+      }
+    }
   }
 }
 
@@ -40,7 +132,7 @@
 @mixin theme($theme) {
   $color-config: mat.get-color-config($theme);
   @if $color-config != null {
-    @include color($theme);
+    @include ligth-color($theme);
   }
 
   $typography-config: mat.get-typography-config($theme);

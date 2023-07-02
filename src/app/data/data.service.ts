@@ -57,10 +57,12 @@ export class DataService {
     if (!festival.date[0].start || !dateRange.start) return false
     const festStart = festival.date[0].start
     const festEnd = festival.date[festival.date.length - 1].end
+    const dateRangeEnd = dateRange.end && new Date(dateRange.end.setHours(3))
+    const dateRangeStart = new Date(dateRange.start.setHours(3))
 
     return Boolean(
-      (festStart >= dateRange.start && dateRange.end && festStart <= dateRange.end) ||
-        (festEnd && dateRange.end && festEnd >= dateRange.start && festEnd <= dateRange.end)
+      (festStart >= dateRangeStart && dateRangeEnd && festStart <= dateRangeEnd) ||
+        (festEnd && dateRangeEnd && festEnd >= dateRangeStart && festEnd <= dateRangeEnd)
     )
   }
 

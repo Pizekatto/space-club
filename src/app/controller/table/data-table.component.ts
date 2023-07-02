@@ -31,6 +31,7 @@ import {
 } from 'rxjs'
 import { animate, state, style, transition, trigger } from '@angular/animations'
 import { MatChipListbox, MatChipOption } from '@angular/material/chips'
+import { IconService } from '@app/data/icon.service'
 
 @Component({
   selector: 'app-data-table',
@@ -41,7 +42,8 @@ import { MatChipListbox, MatChipOption } from '@angular/material/chips'
       state('hide', style({ opacity: 0 })),
       state('show', style({ 'z-index': 0, opacity: 1 })),
       transition('show <=> hide', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
-    ])
+    ]),
+    trigger('editHide', [state('hide', style({ visibility: 'hidden' })), state('show', style({}))])
   ]
 })
 export class DataTableComponent {
@@ -95,7 +97,8 @@ export class DataTableComponent {
     private dataService: DataService,
     private fb: FormBuilder,
     private festService: FestivalsService,
-    private mapService: MapService
+    private mapService: MapService,
+    private icons: IconService
   ) {
     this.dataSource = new MatTableDataSource<Festival>(this.dataService.getFestivals())
     this.selection = new SelectionModel<Festival>(this.allowMultiSelect, this.initialSelection)
