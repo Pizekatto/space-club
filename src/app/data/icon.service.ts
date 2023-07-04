@@ -27,12 +27,14 @@ const icons: IconConfig[] = [
   {
     name: 'location',
     path: '/assets/icons/my_location_black_24dp.svg'
+  },
+  {
+    name: 'eq',
+    path: '/assets/icons/eq.svg'
   }
 ]
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class IconService {
   constructor(private readonly matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer) {
     icons.forEach(icon => this.add(icon))

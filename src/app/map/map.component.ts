@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Inject, Injector, Input, OnChanges, Output } from '@angular/core'
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core'
+import { ActivatedRoute } from '@angular/router'
 import { ACCESS_TOKENS } from '@app/app.module'
-import { DataService } from '@app/data/data.service'
-import { AccessTokens, Coordinates, Festival } from '@app/data/interfaces'
+import { Coordinates, Festival } from '@app/data/interfaces'
 import mapboxgl from 'mapbox-gl'
-import { Subject } from 'rxjs'
+import { Observable, Subject } from 'rxjs'
 
 @Component({
   selector: 'app-map',
@@ -14,25 +14,20 @@ import { Subject } from 'rxjs'
   }
 })
 export class MapComponent {
-  startingСenter: [number, number]
+  startingСenter!: [number, number]
   mapbox: any
   mapLoaded: boolean = false
   allPointsCoordinates: [number, number][]
   @Output() onMapLoaded = new EventEmitter<boolean>()
   @Output() onPointCreated = new EventEmitter<[number, number]>()
 
-  constructor(
-    private dataService: DataService,
-    @Inject(ACCESS_TOKENS) private accessTokens: AccessTokens,
-    private injector: Injector
-  ) {
-    this.startingСenter = this.dataService.allFestivalsCoordinates[0]
-    this.allPointsCoordinates = this.dataService.allFestivalsCoordinates
+  constructor(private routes: ActivatedRoute) {
+    this.allPointsCoordinates = this.routes.snapshot.data['allPoints']
+    this.startingСenter = this.allPointsCoordinates[0]
+    mapboxgl.accessToken = inject(ACCESS_TOKENS).mapbox
   }
 
   async ngOnInit() {
-    mapboxgl.accessToken = this.injector.get(ACCESS_TOKENS).mapbox
-    // mapboxgl.accessToken = this.accessTokens.mapbox
     this.mapbox = await this.createMap()
     this.onMapLoaded.emit(true)
     this.mapLoaded = true
@@ -43,7 +38,7 @@ export class MapComponent {
   addFestivalsPoints() {
     this.mapbox.addSource('points', {
       type: 'geojson',
-      data: this.createGeoJson(this.dataService.allFestivalsCoordinates)
+      data: this.createGeoJson(this.allPointsCoordinates)
     })
 
     this.mapbox.addLayer({
@@ -119,9 +114,7 @@ export class MapComponent {
 
   createPoint = (coordinates: [number, number]) => {
     this.allPointsCoordinates.unshift(coordinates)
-    const geojsonSource = this.mapbox.getSource('points')
-    const geojson = this.createGeoJson(this.allPointsCoordinates)
-    geojsonSource.setData(geojson)
+    this.refreshPoints()
     this.mapbox.flyTo({
       center: coordinates,
       zoom: this.mapbox.getStyle().zoom + 3
@@ -142,8 +135,6 @@ export class MapComponent {
   }
 
   removePoint(i: number) {
-    console.log([...this.allPointsCoordinates])
-    console.log(this.allPointsCoordinates[i])
     this.allPointsCoordinates = this.allPointsCoordinates.filter((_, index) => index != i)
     this.refreshPoints()
   }

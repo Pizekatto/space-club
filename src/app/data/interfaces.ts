@@ -1,13 +1,5 @@
 import { FormControl, FormGroup } from '@angular/forms'
 
-export interface PeriodicElement {
-  name: string
-  position: number
-  weight: number
-  symbol: string
-  description: string
-}
-
 export interface FestDate {
   start: Date | null
   end: Date | null

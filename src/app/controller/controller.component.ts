@@ -1,6 +1,6 @@
 import { Component, ViewEncapsulation, OnDestroy, ViewChild, AfterViewInit } from '@angular/core'
 import { BreakpointObserver, Breakpoints, MediaMatcher, BreakpointState } from '@angular/cdk/layout'
-import { Subject } from 'rxjs'
+import { Observable, Subject } from 'rxjs'
 import { takeUntil } from 'rxjs/operators'
 import { DataService } from '../data/data.service'
 import { MapService } from '@app/map/map.service'
@@ -24,7 +24,7 @@ export class ControllerComponent {
   constructor(
     breakpointObserver: BreakpointObserver,
     mediaMatcher: MediaMatcher,
-    private data: DataService,
+    public dataService: DataService,
     public mapService: MapService
   ) {
     breakpointObserver

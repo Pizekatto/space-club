@@ -30,7 +30,12 @@ export class FestivalsService {
     return this.festivalss
   }
 
-  saveData(festival: Festival) {
-    console.log(festival)
+  /** фестивали с координатами [lng, lat] */
+  getFestivals(): Festival[] {
+    return this.getData().map(el => {
+      const festival: Festival = structuredClone(el)
+      festival.coordinates.forEach(el => el.reverse())
+      return festival
+    })
   }
 }

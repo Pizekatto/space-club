@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core'
-import { FestDate, Festival, PeriodicElement } from './interfaces'
+import { FestDate, Festival } from './interfaces'
 import { Coordinates } from '@app/data/interfaces'
 
-import data from './data.json'
 import { FestivalsService } from './festivals.service'
 import { Locations } from '@app/map/map.service'
+import { StorageService } from './storage.service'
+
+import { BehaviorSubject, Observable, Subject, delay, map } from 'rxjs'
 
 @Injectable()
 export class DataService {
-  ELEMENT_DATA: PeriodicElement[] = [...data]
-  allFestivalsCoordinates: Coordinates // [lng, lat]
   filterFunctions: Record<string, (f: Festival, dateRange: Partial<FestDate>) => boolean | void> = {
     date: this.dateFilter,
     range: this.rangeFilter,
@@ -21,29 +21,24 @@ export class DataService {
     notPassed: this.notPassedFilter
   }
 
-  constructor(private festService: FestivalsService) {
-    this.allFestivalsCoordinates = this.getAllFestivalsCoordinates()
+  constructor(private storageService: StorageService) {}
+
+  getData(): BehaviorSubject<Festival[]> {
+    return this.storageService.get()
   }
 
-  /** фестивали с координатами [lng, lat] */
-  getFestivals() {
-    return this.festService.getData().map(el => {
-      const festival: Festival = structuredClone(el)
-      festival.coordinates.forEach(el => el.reverse())
-      return festival
-    })
+  setData(data: Festival[]) {
+    this.storageService.set(data)
   }
 
   /** Координаты всех фестивалей [lng, lat] */
-  getAllFestivalsCoordinates(): Coordinates {
-    return this.getFestivals()
-      .map(el => el.coordinates)
-      .flat()
-  }
-
-  getrandomElement(): PeriodicElement {
-    const randomElementIndex = Math.floor(Math.random() * this.ELEMENT_DATA.length)
-    return this.ELEMENT_DATA[randomElementIndex]
+  getAllFestivalsCoordinatesStream(): Observable<Coordinates> {
+    return this.getData().pipe(
+      delay(0),
+      map(data => {
+        return data.map(el => el.coordinates).flat()
+      })
+    )
   }
 
   dateFilter(festival: Festival) {
@@ -89,9 +84,5 @@ export class DataService {
     if (!festival.date[0].start) return
     if (festival.date[0].start > new Date()) return true
     return
-  }
-
-  saveData(data: Festival) {
-    this.festService.saveData(data)
   }
 }

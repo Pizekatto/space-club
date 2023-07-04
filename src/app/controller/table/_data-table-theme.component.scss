@@ -8,10 +8,10 @@
 
   app-data-table {
     background-color: rgba(255, 255, 255, 0.4);
-    &::before {
-      color: #737373;
-      text-shadow: -1px -1px 2px #737373;
-    }
+  }
+  .logo {
+    color: #737373;
+    text-shadow: -1px -1px 2px #737373;
   }
   form {
     color: #333;
@@ -70,15 +70,14 @@
   app-data-table {
     background-color: rgba(0, 0, 0, 0.5);
     border: 2px solid rgba(255, 255, 255, 0.1);
-    &::before {
-      color: #b7b7b7;
-      text-shadow: -1px -1px 2px #2f2e2e;
-    }
+  }
+  .logo {
+    color: #b7b7b7;
+    text-shadow: -1px -1px 2px #2f2e2e;
   }
   form {
     color: #fff;
   }
-
   a {
     color: white;
   }

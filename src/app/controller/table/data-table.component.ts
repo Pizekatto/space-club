@@ -32,6 +32,7 @@ import {
 import { animate, state, style, transition, trigger } from '@angular/animations'
 import { MatChipListbox, MatChipOption } from '@angular/material/chips'
 import { IconService } from '@app/data/icon.service'
+import { DataTableDataSource } from '@app/data/dataSource'
 
 @Component({
   selector: 'app-data-table',
@@ -48,7 +49,8 @@ import { IconService } from '@app/data/icon.service'
 })
 export class DataTableComponent {
   unsubscribe = new Subject()
-  dataSource: MatTableDataSource<Festival>
+  // dataSource!: MatTableDataSource<Festival>
+  dataSource!: DataTableDataSource
   displayedColumns: TableColumns[] = ['title', 'date']
   displayedColumnsWithControls = [...this.displayedColumns, 'controls', 'edit']
   titles: TableHeaderTitles = {
@@ -83,6 +85,7 @@ export class DataTableComponent {
   dateSortRangeValid = false
 
   @Input() mapIsReady = false
+  @Input() allPointsStream?: Observable<Coordinates>
   @Output() onSelectionChange = new EventEmitter<Festival>()
   @Output() onSelectNewPlace = new EventEmitter<[number, number]>()
   @Output() onTurnSelectMapMode = new EventEmitter<Subject<[number, number]>>()
@@ -100,13 +103,10 @@ export class DataTableComponent {
     private mapService: MapService,
     private icons: IconService
   ) {
-    this.dataSource = new MatTableDataSource<Festival>(this.dataService.getFestivals())
     this.selection = new SelectionModel<Festival>(this.allowMultiSelect, this.initialSelection)
     this.selection.changed.subscribe(() => {
       this.onSelectionChange.emit(this.selection.selected[0])
     })
-    this.dataSource.filterPredicate = this.filterPredicate
-
     this.createUpdateForm = this.fb.group({
       title: this.fb.control(this.exampleFest.title + this.counter),
       place: this.fb.control<string | null>(null, { validators: Validators.required }),
@@ -134,6 +134,10 @@ export class DataTableComponent {
   }
 
   ngOnInit() {
+    this.dataService.getData().subscribe(data => {
+      this.dataSource = new DataTableDataSource(data, this.dataService)
+      this.dataSource.filterPredicate = this.filterPredicate
+    })
     this.places.next([])
   }
 
@@ -161,7 +165,8 @@ export class DataTableComponent {
     event.stopPropagation()
     const fest: Festival = { ...festival, date: [festival.date] }
     console.log(fest)
-    this.dataSource.data = [fest, ...this.dataSource.data]
+    // this.dataSource.data = [fest, ...this.dataSource.data]
+    this.dataSource.setData([fest, ...this.dataSource.data])
     this.closeForm()
     this.onSaveFestival.emit()
   }
@@ -170,7 +175,7 @@ export class DataTableComponent {
     event.preventDefault()
     console.log(festival)
     const i = this.dataSource.data.findIndex(item => item == row)
-    this.dataSource.data = this.dataSource.data.map((item, index) => {
+    const data = this.dataSource.data.map((item, index) => {
       if (index != i) return item
       let date
       if (!item.date || item.date.length == 1) {
@@ -185,6 +190,7 @@ export class DataTableComponent {
         date
       }
     })
+    this.dataSource.setData(data)
     this.editableRow = null
     this.plusBtn.disabled = false
   }
@@ -250,7 +256,8 @@ export class DataTableComponent {
     const i = this.dataSource.data.findIndex(item => item === row)
     console.log('index', i)
     console.log('data', structuredClone(this.dataSource.data))
-    this.dataSource.data = this.dataSource.data.filter((_, index) => index != i)
+    // this.dataSource.data = this.dataSource.data.filter((_, index) => index != i)
+    this.dataSource.setData(this.dataSource.data.filter((_, index) => index != i))
     // this.dataSource.data = this.dataSource.data.filter(item => item !== row)
     this.onRemoveFestival.emit(i)
   }
@@ -334,9 +341,10 @@ export class DataTableComponent {
   selectOption(selectOption: MatAutocompleteSelectedEvent) {
     console.log(selectOption)
     this.placeSelected = true
-    const coordinates = this.places.getValue()[Number(selectOption.option.id)].point.coordinates
+    const coordinates: [number, number] = this.places.getValue()[Number(selectOption.option.id)].point.coordinates
     this.places.next([])
     this.createUpdateForm.patchValue({ coordinates: [coordinates] })
+    // послать одну точку
     this.onSelectNewPlace.emit(coordinates)
   }
 
