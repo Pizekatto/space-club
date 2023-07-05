@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core'
 import { FestDate, Festival } from './interfaces'
-import { Coordinates } from '@app/data/interfaces'
 
-import { FestivalsService } from './festivals.service'
-import { Locations } from '@app/map/map.service'
+import { Locations, MapService } from '@app/map/map.service'
 import { StorageService } from './storage.service'
 
-import { BehaviorSubject, Observable, Subject, delay, map } from 'rxjs'
+import { Observable, of, tap } from 'rxjs'
+import { FestivalsService } from './festivals.service'
 
 @Injectable()
 export class DataService {
@@ -21,24 +20,24 @@ export class DataService {
     notPassed: this.notPassedFilter
   }
 
-  constructor(private storageService: StorageService) {}
+  constructor(
+    private storageService: StorageService,
+    private festService: FestivalsService,
+    private mapService: MapService
+  ) {}
 
-  getData(): BehaviorSubject<Festival[]> {
-    return this.storageService.get()
+  getData(): Observable<Festival[]> {
+    const localState = this.storageService.get()
+    const state = localState ? of(localState) : this.festService.get()
+    return state.pipe(
+      tap(data => {
+        this.mapService.allFestivalCoordinates = this.festService.getAllFestivalsCoordinates(data)
+      })
+    )
   }
 
   setData(data: Festival[]) {
     this.storageService.set(data)
-  }
-
-  /** Координаты всех фестивалей [lng, lat] */
-  getAllFestivalsCoordinatesStream(): Observable<Coordinates> {
-    return this.getData().pipe(
-      delay(0),
-      map(data => {
-        return data.map(el => el.coordinates).flat()
-      })
-    )
   }
 
   dateFilter(festival: Festival) {

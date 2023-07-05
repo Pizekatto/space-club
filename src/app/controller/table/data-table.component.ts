@@ -1,9 +1,8 @@
 import { SelectionModel } from '@angular/cdk/collections'
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core'
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
+import { FormBuilder, Validators } from '@angular/forms'
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete'
 import { MatButton, MatIconButton } from '@angular/material/button'
-import { MatTableDataSource } from '@angular/material/table'
 import { DataService } from '@app/data/data.service'
 import { FestivalsService } from '@app/data/festivals.service'
 import { CHIPS } from '@app/data/filters'
@@ -17,22 +16,12 @@ import {
   DateRange
 } from '@app/data/interfaces'
 import { Locations, MapService } from '@app/map/map.service'
-import {
-  BehaviorSubject,
-  Observable,
-  Subject,
-  debounceTime,
-  map,
-  startWith,
-  switchMap,
-  tap,
-  filter,
-  distinctUntilChanged
-} from 'rxjs'
+import { BehaviorSubject, Observable, Subject, debounceTime, switchMap, tap, filter, distinctUntilChanged } from 'rxjs'
 import { animate, state, style, transition, trigger } from '@angular/animations'
 import { MatChipListbox, MatChipOption } from '@angular/material/chips'
 import { IconService } from '@app/data/icon.service'
 import { DataTableDataSource } from '@app/data/dataSource'
+import { ActivatedRoute } from '@angular/router'
 
 @Component({
   selector: 'app-data-table',
@@ -48,6 +37,7 @@ import { DataTableDataSource } from '@app/data/dataSource'
   ]
 })
 export class DataTableComponent {
+  data!: Festival[]
   unsubscribe = new Subject()
   // dataSource!: MatTableDataSource<Festival>
   dataSource!: DataTableDataSource
@@ -101,8 +91,10 @@ export class DataTableComponent {
     private fb: FormBuilder,
     private festService: FestivalsService,
     private mapService: MapService,
-    private icons: IconService
+    private icons: IconService,
+    private routes: ActivatedRoute
   ) {
+    this.data = this.routes.snapshot.data['data']
     this.selection = new SelectionModel<Festival>(this.allowMultiSelect, this.initialSelection)
     this.selection.changed.subscribe(() => {
       this.onSelectionChange.emit(this.selection.selected[0])
@@ -124,8 +116,6 @@ export class DataTableComponent {
     this.followPlaceTitle()
 
     this.dateSortRange.statusChanges.subscribe(s => {
-      // console.log('event status', s)
-      // console.log('dateSortRange status', 'valid', this.dateSortRange.valid)
       const status = s == 'VALID' ? true : false
       this.dateSortRangeValid = status
       this.dateRangeChip.selected = status
@@ -134,10 +124,8 @@ export class DataTableComponent {
   }
 
   ngOnInit() {
-    this.dataService.getData().subscribe(data => {
-      this.dataSource = new DataTableDataSource(data, this.dataService)
-      this.dataSource.filterPredicate = this.filterPredicate
-    })
+    this.dataSource = new DataTableDataSource(this.data, this.dataService)
+    this.dataSource.filterPredicate = this.filterPredicate
     this.places.next([])
   }
 
@@ -164,8 +152,6 @@ export class DataTableComponent {
   addNew = (festival: any, event: MouseEvent) => {
     event.stopPropagation()
     const fest: Festival = { ...festival, date: [festival.date] }
-    console.log(fest)
-    // this.dataSource.data = [fest, ...this.dataSource.data]
     this.dataSource.setData([fest, ...this.dataSource.data])
     this.closeForm()
     this.onSaveFestival.emit()
@@ -252,13 +238,8 @@ export class DataTableComponent {
 
   delete(event: MouseEvent, row: Festival) {
     event.stopPropagation()
-    // console.log('Delete')
     const i = this.dataSource.data.findIndex(item => item === row)
-    console.log('index', i)
-    console.log('data', structuredClone(this.dataSource.data))
-    // this.dataSource.data = this.dataSource.data.filter((_, index) => index != i)
     this.dataSource.setData(this.dataSource.data.filter((_, index) => index != i))
-    // this.dataSource.data = this.dataSource.data.filter(item => item !== row)
     this.onRemoveFestival.emit(i)
   }
 
@@ -270,14 +251,11 @@ export class DataTableComponent {
   }
 
   selectRow(row: Festival) {
-    // console.log(row)
     this.selection.select(row)
     this.onSelectionChange.emit(this.selection.selected[0])
   }
 
   filterPredicate = (data: Festival, filterString: string): boolean => {
-    // console.log('фильтр предикат', filterString)
-
     let currentFilters = filterString.split('.').slice(1)
     let result = false
     for (let i = 0; i < currentFilters.length; i++) {

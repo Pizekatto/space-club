@@ -1,26 +1,17 @@
 import { Injectable } from '@angular/core'
-import { BehaviorSubject, Observable, map } from 'rxjs'
-import { Festival } from './interfaces'
-import { DataService } from './data.service'
+import { Festival, FestivalDTO } from './interfaces'
 import { FestivalsService } from './festivals.service'
 
 const STORAGE_KEY = 'festivals'
 
 @Injectable()
 export class StorageService {
-  protected readonly state$!: BehaviorSubject<Festival[]>
   readonly storage: Storage = window.localStorage
 
-  constructor(private festService: FestivalsService) {
-    this.state$ = new BehaviorSubject<Festival[]>(this.getLocalState())
-  }
-
-  get(): BehaviorSubject<Festival[]> {
-    return this.state$
-  }
+  constructor(private festService: FestivalsService) {}
 
   set(state: Festival[]) {
-    this.setState(state)
+    this.setLocalState(state)
   }
 
   clear() {
@@ -28,24 +19,15 @@ export class StorageService {
   }
 
   reset(): void {
-    this.setState(this.festService.getFestivals())
-  }
-
-  addItem(state: Festival) {
-    this.setState([...this.state$.getValue(), state])
-  }
-
-  protected setState(state: Festival[]) {
-    this.state$.next(state)
-    this.setLocalState(state)
+    this.festService.get().subscribe(data => this.setLocalState(data))
   }
 
   protected setLocalState(state: Festival[]) {
     this.storage.setItem(STORAGE_KEY, JSON.stringify(state))
   }
 
-  protected getLocalState(): Festival[] {
+  get(): Festival[] | null {
     const localState = this.storage.getItem(STORAGE_KEY)
-    return localState ? JSON.parse(localState) : this.festService.getFestivals()
+    return localState ? this.festService.deserializeDate(JSON.parse(localState) as FestivalDTO[]) : null
   }
 }

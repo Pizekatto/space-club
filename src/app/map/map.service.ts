@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http'
-import { Injectable, Injector } from '@angular/core'
-import { ACCESS_TOKENS } from '@app/app.module'
+import { Injectable, Injector, inject } from '@angular/core'
+import { ACCESS_TOKENS, URLS } from '@app/app.module'
 import { Coordinates, GeoCodingResult } from '@app/data/interfaces'
-import { Observable, Subject, map, tap } from 'rxjs'
+import { BehaviorSubject, Observable, Subject, map, tap } from 'rxjs'
 
 export enum Locations {
   russia = 'russia',
@@ -13,15 +13,13 @@ export enum Locations {
 
 @Injectable()
 export class MapService {
-  accessToken: any
+  accessToken: string
+  geocoding_url: string
   constructor(private http: HttpClient, private injector: Injector) {
     this.accessToken = this.injector.get(ACCESS_TOKENS).mapbox
+    this.geocoding_url = inject(URLS).mapbox
   }
-  $coordinates = new Subject<Coordinates>()
-
-  setCoordinates(coordinates: Coordinates) {
-    this.$coordinates.next(coordinates)
-  }
+  allFestivalCoordinates!: Coordinates
 
   geoCodingGetAddress(request: string | [number, number]): Observable<GeoCodingResult[]> {
     let reverse = false
@@ -31,7 +29,7 @@ export class MapService {
     } else {
       request = encodeURIComponent(request)
     }
-    const base = 'https://api.mapbox.com/geocoding/v5/mapbox.places/'
+    const base = this.geocoding_url
     const url = new URL(request + '.json', base)
     let params = new HttpParams()
     if (!reverse) {

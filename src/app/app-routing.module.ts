@@ -7,7 +7,9 @@ const routes: Routes = [
   {
     path: '',
     component: ControllerComponent,
-    resolve: { allPoints: () => inject(DataService).getAllFestivalsCoordinatesStream() }
+    resolve: {
+      data: () => inject(DataService).getData()
+    }
   }
 ]
 

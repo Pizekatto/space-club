@@ -4,6 +4,7 @@ import { ACCESS_TOKENS } from '@app/app.module'
 import { Coordinates, Festival } from '@app/data/interfaces'
 import mapboxgl from 'mapbox-gl'
 import { Observable, Subject } from 'rxjs'
+import { MapService } from './map.service'
 
 @Component({
   selector: 'app-map',
@@ -21,8 +22,8 @@ export class MapComponent {
   @Output() onMapLoaded = new EventEmitter<boolean>()
   @Output() onPointCreated = new EventEmitter<[number, number]>()
 
-  constructor(private routes: ActivatedRoute) {
-    this.allPointsCoordinates = this.routes.snapshot.data['allPoints']
+  constructor(private routes: ActivatedRoute, private mapService: MapService) {
+    this.allPointsCoordinates = this.mapService.allFestivalCoordinates
     this.startingСenter = this.allPointsCoordinates[0]
     mapboxgl.accessToken = inject(ACCESS_TOKENS).mapbox
   }

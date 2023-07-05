@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core'
-import festivals from './festivals.json'
-import { Festival } from './interfaces'
+import { Coordinates, Festival, FestivalDTO } from './interfaces'
+import { SupabaseService } from './supabase.service'
+import { Observable, map } from 'rxjs'
 
 @Injectable()
 export class FestivalsService {
-  festivalss: Festival[]
   exampleFest = {
     title: 'Фестиваль электронной музыки ',
     place: 'Краснодар',
@@ -14,8 +14,18 @@ export class FestivalsService {
     }
   }
 
-  constructor() {
-    this.festivalss = festivals.map(el => ({
+  constructor(private supabase: SupabaseService) {}
+
+  /** [lat, lng] -> [lng, lat] */
+  swapCoordinates(festivals: FestivalDTO[]) {
+    return festivals.map(festival => {
+      festival.coordinates.forEach(el => el.reverse())
+      return festival
+    })
+  }
+
+  deserializeDate(festivals: FestivalDTO[]): Festival[] {
+    return festivals.map(el => ({
       ...el,
       coordinates: el.coordinates as [number, number][],
       date:
@@ -26,16 +36,12 @@ export class FestivalsService {
     }))
   }
 
-  getData(): Festival[] {
-    return this.festivalss
+  get(): Observable<Festival[]> {
+    return this.supabase.get().pipe(map(this.swapCoordinates), map(this.deserializeDate))
   }
 
-  /** фестивали с координатами [lng, lat] */
-  getFestivals(): Festival[] {
-    return this.getData().map(el => {
-      const festival: Festival = structuredClone(el)
-      festival.coordinates.forEach(el => el.reverse())
-      return festival
-    })
+  /** Координаты всех фестивалей [lng, lat] */
+  getAllFestivalsCoordinates(festivals: Festival[]): Coordinates {
+    return festivals.map(festival => festival.coordinates).flat()
   }
 }

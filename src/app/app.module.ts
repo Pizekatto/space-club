@@ -7,11 +7,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { DataModule } from './data/data.module'
 import { ControllerModule } from './controller/controller.module'
 import { environment } from 'src/environments/environments'
-import { AccessTokens } from './data/interfaces'
+import { AccessTokens, PublicUrls, Users } from './data/interfaces'
 import { registerLocaleData } from '@angular/common'
 import localeRu from '@angular/common/locales/ru'
 
 export const ACCESS_TOKENS = new InjectionToken<AccessTokens>('access tokens')
+export const URLS = new InjectionToken<PublicUrls>('public urls')
+export const USERS = new InjectionToken<Users>('users')
 
 registerLocaleData(localeRu)
 
@@ -21,7 +23,23 @@ registerLocaleData(localeRu)
   providers: [
     {
       provide: ACCESS_TOKENS,
-      useValue: { mapbox: environment.mapboxgl.accessToken }
+      useValue: {
+        supabase: environment.supabase.accessToken,
+        mapbox: environment.mapboxgl.accessToken
+      }
+    },
+    {
+      provide: URLS,
+      useValue: {
+        mapbox: environment.mapboxgl.geocoding_url,
+        supabase: environment.supabase.PUBLIC_URL
+      }
+    },
+    {
+      provide: USERS,
+      useValue: {
+        supabase: environment.supabase.user
+      }
     },
     { provide: LOCALE_ID, useValue: 'ru' }
   ],

@@ -19,6 +19,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { ControllerComponent } from './controller.component'
 import { DataTableComponent } from './table/data-table.component'
 import { MapModule } from '@app/map/map.module'
+import { IconService } from '@app/data/icon.service'
 
 @NgModule({
   declarations: [ControllerComponent, DataTableComponent],
