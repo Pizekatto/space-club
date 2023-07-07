@@ -10,27 +10,27 @@ export interface IconConfig {
 const icons: IconConfig[] = [
   {
     name: 'cancel',
-    path: '/assets/icons/cancel_black_24dp.svg'
+    path: 'assets/icons/cancel_black_24dp.svg'
   },
   {
     name: 'plus',
-    path: '/assets/icons/add_circle_outline_black_24dp.svg'
+    path: 'assets/icons/add_circle_outline_black_24dp.svg'
   },
   {
     name: 'save',
-    path: '/assets/icons/done_black_24dp.svg'
+    path: 'assets/icons/done_black_24dp.svg'
   },
   {
     name: 'close',
-    path: '/assets/icons/close_black_24dp.svg'
+    path: 'assets/icons/close_black_24dp.svg'
   },
   {
     name: 'location',
-    path: '/assets/icons/my_location_black_24dp.svg'
+    path: 'assets/icons/my_location_black_24dp.svg'
   },
   {
     name: 'eq',
-    path: '/assets/icons/eq.svg'
+    path: 'assets/icons/eq.svg'
   }
 ]
 
