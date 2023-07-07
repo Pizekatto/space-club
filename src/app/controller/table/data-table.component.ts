@@ -71,7 +71,7 @@ export class DataTableComponent {
   places: BehaviorSubject<GeoCodingResult[]>
   placeSelected = false
   tempPoint = false
-  counter = 1
+  counter = 0
   dateSortRangeValid = false
 
   @Input() mapIsReady = false
@@ -213,12 +213,8 @@ export class DataTableComponent {
   }
 
   edit(event: MouseEvent, row: Festival) {
-    // event.stopPropagation()
-    console.log(row)
     this.editableRow = row
-    // console.log('Edit')
     this.plusBtn.disabled = true
-    console.log(this.createUpdateForm.value)
     this.createUpdateForm.patchValue({
       title: row.title,
       coordinates: row.coordinates,
