@@ -2,11 +2,10 @@
   "name": "space-club",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
     "start": "ng serve --open",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "build": "ng build --base-href /space-club/",
+    "test": "ng test",
+    "deploy": "git subtree push --prefix dist origin gh-pages"
   },
   "private": true,
   "dependencies": {
