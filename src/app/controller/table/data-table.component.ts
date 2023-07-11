@@ -133,10 +133,13 @@ export class DataTableComponent {
     this.unsubscribe.complete()
   }
 
+  /** подписка на изменения поля "Место" в форме
+   * запрашивает координаты через геокодинг
+   */
   followPlaceTitle() {
     this.createUpdateForm.controls['place'].valueChanges
       .pipe(
-        debounceTime(2000),
+        debounceTime(1500),
         distinctUntilChanged(),
         filter(_ => !this.placeSelected),
         filter(val => !!val),
@@ -149,6 +152,7 @@ export class DataTableComponent {
       .subscribe()
   }
 
+  /** Сохранение нового Ф */
   addNew = (festival: any, event: MouseEvent) => {
     event.stopPropagation()
     const fest: Festival = { ...festival, date: [festival.date] }
@@ -157,6 +161,7 @@ export class DataTableComponent {
     this.onSaveFestival.emit()
   }
 
+  /** Сохранение после редактирования */
   update = (festival: any, event: MouseEvent, row: Festival) => {
     event.preventDefault()
     console.log(festival)
@@ -177,10 +182,12 @@ export class DataTableComponent {
       }
     })
     this.dataSource.setData(data)
+    console.log(data)
     this.editableRow = null
     this.plusBtn.disabled = false
   }
 
+  /** Нажатие на +, открытие формы добавления нового Ф */
   add() {
     if (this.plus) {
       return
@@ -195,6 +202,7 @@ export class DataTableComponent {
     })
   }
 
+  /** Отмена добавления нового Ф */
   cancelAdding = (event: MouseEvent) => {
     event.stopPropagation()
     if (this.tempPoint || this.placeSelected) {
@@ -204,6 +212,7 @@ export class DataTableComponent {
     this.counter--
   }
 
+  /** Отмена редактирования */
   cancelEditing = (event: MouseEvent) => {
     event.stopPropagation()
     this.editableRow = null
@@ -212,6 +221,9 @@ export class DataTableComponent {
     this.places.next([])
   }
 
+  /** Нажатие на карандаш редактирования Ф
+   * если поле "Место" пустое, то запрос геокодинга по координатам и вставка в форму места
+   */
   edit(event: MouseEvent, row: Festival) {
     this.editableRow = row
     this.plusBtn.disabled = true
@@ -221,8 +233,10 @@ export class DataTableComponent {
       date: {
         start: row.date ? row.date[0].start : null,
         end: row.date ? row.date[0].end : null
-      }
+      },
+      place: row.place || null
     })
+    console.log(this.createUpdateForm.value)
     if (!this.createUpdateForm.value.place) {
       this.mapService.geoCodingGetAddress(row.coordinates[0]).subscribe(v => {
         this.createUpdateForm.patchValue({
@@ -230,8 +244,10 @@ export class DataTableComponent {
         })
       })
     }
+    this.createUpdateForm.controls.place.disable()
   }
 
+  /** удаление Ф */
   delete(event: MouseEvent, row: Festival) {
     event.stopPropagation()
     const i = this.dataSource.data.findIndex(item => item === row)
@@ -246,11 +262,13 @@ export class DataTableComponent {
     this.tempPoint = false
   }
 
+  /** Нажатие на строку таблицы */
   selectRow(row: Festival) {
     this.selection.select(row)
     this.onSelectionChange.emit(this.selection.selected[0])
   }
 
+  /** функция сравнения стандартная для Angular Material Table DataSource */
   filterPredicate = (data: Festival, filterString: string): boolean => {
     let currentFilters = filterString.split('.').slice(1)
     let result = false
@@ -267,7 +285,7 @@ export class DataTableComponent {
     this.dataSource.filter = filter
   }
 
-  /** нажатие на прицел */
+  /** Нажатие на прицел для добавления точки на карту */
   selectPoint(event: MouseEvent, targetButton: MatIconButton) {
     event.stopPropagation()
     if (this.tempPoint || this.placeSelected) {
@@ -301,11 +319,15 @@ export class DataTableComponent {
       })
   }
 
-  clearPlaceField() {
+  /** очистка поля "Место" в форме
+   * удаляет временную точку на карте
+   */
+  clearPlaceField(clearPlaceAction: EventEmitter<void | number>) {
     this.createUpdateForm.controls['place'].reset()
     this.places.next([])
+    console.log('placeSelected', this.placeSelected)
     if (this.placeSelected) {
-      this.onCancelLastSelect.emit()
+      clearPlaceAction.emit()
     }
     this.placeSelected = false
     this.tempPoint = false

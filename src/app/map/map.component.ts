@@ -96,7 +96,8 @@ export class MapComponent {
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v12', // style URL
       center: this.startingСenter,
-      zoom: 3
+      zoom: 3,
+      antialias: true
     })
     await new Promise(resolve => {
       map.on('load', () => resolve('Карта загружена'))
@@ -129,15 +130,15 @@ export class MapComponent {
     this.mapbox.zoomTo(3)
   }
 
+  removePoint(i: number) {
+    this.allPointsCoordinates = this.allPointsCoordinates.filter((_, index) => index != i)
+    this.refreshPoints()
+  }
+
   refreshPoints() {
     const geojson = this.createGeoJson(this.allPointsCoordinates)
     const geojsonSource = this.mapbox.getSource('points')
     geojsonSource.setData(geojson)
-  }
-
-  removePoint(i: number) {
-    this.allPointsCoordinates = this.allPointsCoordinates.filter((_, index) => index != i)
-    this.refreshPoints()
   }
 
   afterSave() {
