@@ -20,9 +20,9 @@ export const CHIPS = [
   {
     title: 'Не прошли',
     value: 'notPassed'
-  },
-  {
-    title: 'Есть дата',
-    value: 'date'
   }
+  // {
+  //   title: 'Есть дата',
+  //   value: 'date'
+  // }
 ]

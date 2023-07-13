@@ -1,22 +1,21 @@
-<main>
-  <app-map (onMapLoaded)="mapIsReady = true"></app-map>
-  <app-data-table (onSelectionChange)="selectFestival($event)"
-                  [mapIsReady]="mapIsReady"
-                  (onSelectNewPlace)="newPoint($event)"
-                  (onCancelLastSelect)="removeLastPoint()"
-                  (onTurnSelectMapMode)="turnSelectMapMode($event)"
-                  (onSaveFestival)="afterSaveFestival()"
-                  (onRemoveFestival)="removePoint($event)"></app-data-table>
-  <div class="space-objects">
-    <img src="assets/icons/globe_planet_jupiter_2773.png"
-         class="planet planet-one">
-    <img src="assets/icons/globe_planetNeptune_glob_2775.png"
-         class="planet planet-two">
-    <img src="assets/icons/shuttle.png"
-         class="space-ship space-ship-one">
-    <img src="assets/icons/station.png"
-         class="space-ship space-ship-two">
-    <img src="assets/icons/china-station.png"
-         class="space-ship space-ship-three">
-  </div>
-</main>
+<app-map (onMapLoaded)="mapIsReady = true"></app-map>
+<app-data-table (onSelectionChange)="selectFestival($event)"
+                [mapIsReady]="mapIsReady"
+                (onSelectNewPlace)="newPoint($event)"
+                (onCancelLastSelect)="removeLastPoint()"
+                (onTurnSelectMapMode)="turnSelectMapMode($event)"
+                (onCancelSelectMapMode)="cancelSelectMapMode()"
+                (onSaveFestival)="afterSaveFestival()"
+                (onRemoveFestival)="removePoint($event)"></app-data-table>
+<div class="space-objects">
+  <img src="assets/icons/globe_planet_jupiter_2773.png"
+       class="planet planet-one">
+  <img src="assets/icons/globe_planetNeptune_glob_2775.png"
+       class="planet planet-two">
+  <img src="assets/icons/shuttle.png"
+       class="space-ship space-ship-one">
+  <img src="assets/icons/station.png"
+       class="space-ship space-ship-two">
+  <img src="assets/icons/china-station.png"
+       class="space-ship space-ship-three">
+</div>

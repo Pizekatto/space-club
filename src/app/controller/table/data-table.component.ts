@@ -30,7 +30,7 @@ import { ActivatedRoute } from '@angular/router'
   animations: [
     trigger('editView', [
       state('hide', style({ opacity: 0 })),
-      state('show', style({ 'z-index': 0, opacity: 1 })),
+      state('show', style({ 'z-index': 1, opacity: 1 })),
       transition('show <=> hide', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
     ]),
     trigger('editHide', [state('hide', style({ visibility: 'hidden' })), state('show', style({}))])
@@ -73,12 +73,15 @@ export class DataTableComponent {
   tempPoint = false
   counter = 0
   dateSortRangeValid = false
+  selectPointStream?: Subject<[number, number]>
+  saveButtonDisable = false
 
   @Input() mapIsReady = false
   @Input() allPointsStream?: Observable<Coordinates>
   @Output() onSelectionChange = new EventEmitter<Festival>()
   @Output() onSelectNewPlace = new EventEmitter<[number, number]>()
   @Output() onTurnSelectMapMode = new EventEmitter<Subject<[number, number]>>()
+  @Output() onCancelSelectMapMode = new EventEmitter<void>()
   @Output() onCancelLastSelect = new EventEmitter<void>()
   @Output() onRemoveFestival = new EventEmitter<number>()
   @Output() onSaveFestival = new EventEmitter<void>()
@@ -185,6 +188,7 @@ export class DataTableComponent {
     console.log(data)
     this.editableRow = null
     this.plusBtn.disabled = false
+    this.closeForm()
   }
 
   /** Нажатие на +, открытие формы добавления нового Ф */
@@ -210,6 +214,10 @@ export class DataTableComponent {
     }
     this.closeForm()
     this.counter--
+    if (this.selectPointStream) {
+      this.onCancelSelectMapMode.emit()
+      this.selectPointStream.complete()
+    }
   }
 
   /** Отмена редактирования */
@@ -260,6 +268,7 @@ export class DataTableComponent {
     this.createUpdateForm.reset()
     this.placeSelected = false
     this.tempPoint = false
+    this.createUpdateForm.controls.place.enable()
   }
 
   /** Нажатие на строку таблицы */
@@ -287,13 +296,15 @@ export class DataTableComponent {
 
   /** Нажатие на прицел для добавления точки на карту */
   selectPoint(event: MouseEvent, targetButton: MatIconButton) {
+    this.saveButtonDisable = true
     event.stopPropagation()
     if (this.tempPoint || this.placeSelected) {
       this.onCancelLastSelect.emit()
     }
     targetButton.disabled = true
-    this.createUpdateForm.controls['place'].reset()
-    this.createUpdateForm.controls['place'].disable()
+    this.createUpdateForm.controls.place.reset()
+    this.createUpdateForm.controls.place.disable()
+
     const dataStream = new Subject<[number, number]>()
     this.onTurnSelectMapMode.emit(dataStream)
     dataStream
@@ -314,9 +325,11 @@ export class DataTableComponent {
         }
         this.createUpdateForm.patchValue({ place })
         this.placeSelected = true
-        this.createUpdateForm.controls['place'].enable()
+        this.createUpdateForm.controls.place.enable()
         targetButton.disabled = false
+        this.saveButtonDisable = false
       })
+    this.selectPointStream = dataStream
   }
 
   /** очистка поля "Место" в форме

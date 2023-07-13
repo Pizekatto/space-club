@@ -1,18 +1,28 @@
 @use '@angular/material' as mat;
 @use './app/controller/table/data-table-theme.component' as data-table;
+@import 'bootstrap/scss/mixins/breakpoints';
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
 
 *,
 :after,
 :before {
   box-sizing: border-box;
 }
-html,
-body {
-  height: 100vh;
-}
 body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
+  height: 100vh;
+}
+button {
+  padding: 0;
 }
 
 $light-theme: mat.define-light-theme(
@@ -96,7 +106,7 @@ mat-chip-listbox > div.mdc-evolution-chip-set__chips {
 
 mat-row {
   &:hover {
-    & .btn-table-controls {
+    & .control {
       visibility: visible;
     }
   }
@@ -104,5 +114,11 @@ mat-row {
     height: 0;
   }
 }
+
+// mat-header-cell.mat-column-date {
+//   @include media-breakpoint-down(md) {
+//     display: none;
+//   }
+// }
 
 // data-table.component ---

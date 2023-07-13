@@ -52,6 +52,10 @@ export class ControllerComponent {
     this.map.addPointMode(dataStream)
   }
 
+  cancelSelectMapMode() {
+    this.map.cancelAddPointMode()
+  }
+
   removePoint(i: number) {
     this.map.removePoint(i)
   }
