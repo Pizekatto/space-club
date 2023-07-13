@@ -33,17 +33,19 @@ export class MapComponent {
     this.startingСenter = this.allPointsCoordinates[0]
     mapboxgl.accessToken = inject(ACCESS_TOKENS).mapbox
 
-    breakpointObserver.observe('(max-height: 700px)').subscribe((breakpoints: BreakpointState) => {
-      if (breakpoints.matches) {
-        this.mobileView = true
-        this.zoom = this.mobileZoom
-        this.mapbox?.zoomTo(this.zoom)
-      } else {
-        this.mobileView = false
-        this.zoom = this.bigZoom
-        this.mapbox?.zoomTo(this.zoom)
-      }
-    })
+    breakpointObserver
+      .observe(['(max-width: 767px)', '(max-height: 700px)'])
+      .subscribe((breakpoints: BreakpointState) => {
+        if (breakpoints.matches) {
+          this.mobileView = true
+          this.zoom = this.mobileZoom
+          this.mapbox?.zoomTo(this.zoom)
+        } else {
+          this.mobileView = false
+          this.zoom = this.bigZoom
+          this.mapbox?.zoomTo(this.zoom)
+        }
+      })
   }
 
   async ngOnInit() {
