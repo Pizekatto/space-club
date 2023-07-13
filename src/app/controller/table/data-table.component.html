@@ -37,8 +37,7 @@
     <mat-datepicker-toggle matIconSuffix
                            [for]="picker">
     </mat-datepicker-toggle>
-    <mat-date-range-picker #picker
-                           (monthSelected)="logging($event)"></mat-date-range-picker>
+    <mat-date-range-picker #picker></mat-date-range-picker>
     <mat-form-field class="datepicker"
                     subscriptSizing="dynamic">
       <mat-date-range-input [formGroup]="dateSortRange"
@@ -110,19 +109,21 @@
     <ng-container matColumnDef="controls">
       <mat-header-cell *matHeaderCellDef>&nbsp;</mat-header-cell>
       <mat-cell *matCellDef="let row">
-        <div class="btn-table-controls"
-             [@editHide]="editableRow != row ? 'show' : 'hide'">
-          <button mat-icon-button
-                  class="control"
-                  (click)="edit($event, row)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button
-                  class="control delete"
-                  (click)="delete($event, row)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
+        <!-- <div class="btn-table-controls"
+             [@editHide]="editableRow != row ? 'show' : 'hide'"> -->
+        <button mat-icon-button
+                class="control control-edit"
+                (click)="edit($event, row)"
+                [@editHide]="editableRow != row ? 'show' : 'hide'">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button
+                class="control control-delete"
+                (click)="delete($event, row)"
+                [@editHide]="editableRow != row ? 'show' : 'hide'">
+          <mat-icon>delete</mat-icon>
+        </button>
+        <!-- </div> -->
       </mat-cell>
     </ng-container>
 
@@ -226,7 +227,7 @@
     </mat-form-field>
     <button mat-icon-button
             class="save"
-            [disabled]="createUpdateForm.invalid">
+            [disabled]="createUpdateForm.invalid || saveButtonDisable">
       <mat-icon svgIcon="save"></mat-icon>
     </button>
     <button type="button"

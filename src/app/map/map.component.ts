@@ -5,6 +5,7 @@ import { Coordinates, Festival } from '@app/data/interfaces'
 import mapboxgl from 'mapbox-gl'
 import { Observable, Subject } from 'rxjs'
 import { MapService } from './map.service'
+import { BreakpointObserver, BreakpointState, Breakpoints } from '@angular/cdk/layout'
 
 @Component({
   selector: 'app-map',
@@ -21,11 +22,28 @@ export class MapComponent {
   allPointsCoordinates: [number, number][]
   @Output() onMapLoaded = new EventEmitter<boolean>()
   @Output() onPointCreated = new EventEmitter<[number, number]>()
+  mobileView = false
+  mobileZoom = 1.5
+  bigZoom = 3
+  zoom = this.bigZoom
+  selectPointListener?: (event: any) => void
 
-  constructor(private routes: ActivatedRoute, private mapService: MapService) {
+  constructor(private routes: ActivatedRoute, private mapService: MapService, breakpointObserver: BreakpointObserver) {
     this.allPointsCoordinates = this.mapService.allFestivalCoordinates
     this.startingСenter = this.allPointsCoordinates[0]
     mapboxgl.accessToken = inject(ACCESS_TOKENS).mapbox
+
+    breakpointObserver.observe('(max-height: 700px)').subscribe((breakpoints: BreakpointState) => {
+      if (breakpoints.matches) {
+        this.mobileView = true
+        this.zoom = this.mobileZoom
+        this.mapbox?.zoomTo(this.zoom)
+      } else {
+        this.mobileView = false
+        this.zoom = this.bigZoom
+        this.mapbox?.zoomTo(this.zoom)
+      }
+    })
   }
 
   async ngOnInit() {
@@ -74,21 +92,27 @@ export class MapComponent {
     if (!this.mapLoaded) return
     this.mapbox.flyTo({
       center: point[0],
-      zoom: 3
+      zoom: this.zoom
     })
   }
 
   addPointMode = (dataStream: Subject<[number, number]>) => {
     const canvas = this.mapbox.getCanvasContainer()
     canvas.style.cursor = 'crosshair'
-    this.mapbox.once('click', (event: any) => {
-      // event.preventDefault()
+    this.selectPointListener = (event: any) => {
       const coordinates: [number, number] = [event.lngLat.lng, event.lngLat.lat]
       this.createPoint(coordinates)
       dataStream.next(coordinates)
       dataStream.complete()
       canvas.style.cursor = ''
-    })
+    }
+    this.mapbox.once('click', this.selectPointListener)
+  }
+
+  cancelAddPointMode() {
+    const canvas = this.mapbox.getCanvasContainer()
+    this.mapbox.off('click', this.selectPointListener)
+    canvas.style.cursor = ''
   }
 
   async createMap() {
@@ -96,8 +120,8 @@ export class MapComponent {
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v12', // style URL
       center: this.startingСenter,
-      zoom: 3,
-      antialias: true
+      zoom: this.zoom,
+      antialias: false
     })
     await new Promise(resolve => {
       map.on('load', () => resolve('Карта загружена'))
@@ -127,7 +151,7 @@ export class MapComponent {
   removeLastPoint() {
     this.allPointsCoordinates.shift()
     this.refreshPoints()
-    this.mapbox.zoomTo(3)
+    this.mapbox.zoomTo(this.zoom)
   }
 
   removePoint(i: number) {
@@ -142,6 +166,6 @@ export class MapComponent {
   }
 
   afterSave() {
-    this.mapbox.zoomTo(3)
+    this.mapbox.zoomTo(this.zoom)
   }
 }

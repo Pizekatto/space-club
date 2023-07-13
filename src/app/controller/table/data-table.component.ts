@@ -30,7 +30,7 @@ import { ActivatedRoute } from '@angular/router'
   animations: [
     trigger('editView', [
       state('hide', style({ opacity: 0 })),
-      state('show', style({ 'z-index': 0, opacity: 1 })),
+      state('show', style({ 'z-index': 1, opacity: 1 })),
       transition('show <=> hide', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
     ]),
     trigger('editHide', [state('hide', style({ visibility: 'hidden' })), state('show', style({}))])
@@ -73,12 +73,15 @@ export class DataTableComponent {
   tempPoint = false
   counter = 0
   dateSortRangeValid = false
+  selectPointStream?: Subject<[number, number]>
+  saveButtonDisable = false
 
   @Input() mapIsReady = false
   @Input() allPointsStream?: Observable<Coordinates>
   @Output() onSelectionChange = new EventEmitter<Festival>()
   @Output() onSelectNewPlace = new EventEmitter<[number, number]>()
   @Output() onTurnSelectMapMode = new EventEmitter<Subject<[number, number]>>()
+  @Output() onCancelSelectMapMode = new EventEmitter<void>()
   @Output() onCancelLastSelect = new EventEmitter<void>()
   @Output() onRemoveFestival = new EventEmitter<number>()
   @Output() onSaveFestival = new EventEmitter<void>()
@@ -143,7 +146,6 @@ export class DataTableComponent {
         distinctUntilChanged(),
         filter(_ => !this.placeSelected),
         filter(val => !!val),
-        tap(v => console.log(v)),
         switchMap((request: any) => this.mapService.geoCodingGetAddress(request)),
         tap(data => {
           this.places.next(data)
@@ -164,7 +166,6 @@ export class DataTableComponent {
   /** Сохранение после редактирования */
   update = (festival: any, event: MouseEvent, row: Festival) => {
     event.preventDefault()
-    console.log(festival)
     const i = this.dataSource.data.findIndex(item => item == row)
     const data = this.dataSource.data.map((item, index) => {
       if (index != i) return item
@@ -182,9 +183,9 @@ export class DataTableComponent {
       }
     })
     this.dataSource.setData(data)
-    console.log(data)
     this.editableRow = null
     this.plusBtn.disabled = false
+    this.closeForm()
   }
 
   /** Нажатие на +, открытие формы добавления нового Ф */
@@ -210,6 +211,10 @@ export class DataTableComponent {
     }
     this.closeForm()
     this.counter--
+    if (this.selectPointStream) {
+      this.onCancelSelectMapMode.emit()
+      this.selectPointStream.complete()
+    }
   }
 
   /** Отмена редактирования */
@@ -236,7 +241,6 @@ export class DataTableComponent {
       },
       place: row.place || null
     })
-    console.log(this.createUpdateForm.value)
     if (!this.createUpdateForm.value.place) {
       this.mapService.geoCodingGetAddress(row.coordinates[0]).subscribe(v => {
         this.createUpdateForm.patchValue({
@@ -260,6 +264,7 @@ export class DataTableComponent {
     this.createUpdateForm.reset()
     this.placeSelected = false
     this.tempPoint = false
+    this.createUpdateForm.controls.place.enable()
   }
 
   /** Нажатие на строку таблицы */
@@ -287,13 +292,15 @@ export class DataTableComponent {
 
   /** Нажатие на прицел для добавления точки на карту */
   selectPoint(event: MouseEvent, targetButton: MatIconButton) {
+    this.saveButtonDisable = true
     event.stopPropagation()
     if (this.tempPoint || this.placeSelected) {
       this.onCancelLastSelect.emit()
     }
     targetButton.disabled = true
-    this.createUpdateForm.controls['place'].reset()
-    this.createUpdateForm.controls['place'].disable()
+    this.createUpdateForm.controls.place.reset()
+    this.createUpdateForm.controls.place.disable()
+
     const dataStream = new Subject<[number, number]>()
     this.onTurnSelectMapMode.emit(dataStream)
     dataStream
@@ -305,7 +312,6 @@ export class DataTableComponent {
       )
       .subscribe(data => {
         this.tempPoint = true
-        console.log(data)
         let place
         if (data.length) {
           place = data[0].place
@@ -314,9 +320,11 @@ export class DataTableComponent {
         }
         this.createUpdateForm.patchValue({ place })
         this.placeSelected = true
-        this.createUpdateForm.controls['place'].enable()
+        this.createUpdateForm.controls.place.enable()
         targetButton.disabled = false
+        this.saveButtonDisable = false
       })
+    this.selectPointStream = dataStream
   }
 
   /** очистка поля "Место" в форме
@@ -325,7 +333,6 @@ export class DataTableComponent {
   clearPlaceField(clearPlaceAction: EventEmitter<void | number>) {
     this.createUpdateForm.controls['place'].reset()
     this.places.next([])
-    console.log('placeSelected', this.placeSelected)
     if (this.placeSelected) {
       clearPlaceAction.emit()
     }
@@ -335,16 +342,11 @@ export class DataTableComponent {
 
   /** Выбор места из автокомплита */
   selectOption(selectOption: MatAutocompleteSelectedEvent) {
-    console.log(selectOption)
     this.placeSelected = true
     const coordinates: [number, number] = this.places.getValue()[Number(selectOption.option.id)].point.coordinates
     this.places.next([])
     this.createUpdateForm.patchValue({ coordinates: [coordinates] })
     // послать одну точку
     this.onSelectNewPlace.emit(coordinates)
-  }
-
-  logging(v: any) {
-    console.log(v)
   }
 }
