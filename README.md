@@ -1,27 +1,43 @@
-# Crud
+## [Demo](https://pizekatto.github.io/space-club/)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.2.
+## Описание
 
-## Development server
+- приложение представляет собой актуальный список мировых фестивалей электронной музыки в 2023 году и является демонстрацией `CRUD` операций (CREATE, READ, UPDATE) + взаимодействие с картой
+- инфа по фестивалям взята [отсюда](https://traveldivision.ru/festivals/electro)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Технологии
 
-## Code scaffolding
+- Angular
+- UI фреймворк Angular Material
+- карты [Mapbox](https://www.mapbox.com/)
+- начальная загрузка данных из [Supabase](https://supabase.com/)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Компоненты
 
-## Build
+### Карта
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- на карте отображаются `GeoJSON` точки по координатам фестивалей
+- при добавлении фестиваля в список добавляется новая точка
+- при удалении фестиваля точка удаляется
+- точку можно поставить
+  - мышкой после нажатия на прицел
+  - или после выбора строки из поля `Место` она поставится сама
 
-## Running unit tests
+### Форма добавления
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- сделана на Reactive Forms
+- новые данные сохраняются в LocalStorage
+- поле "Место"
+  - если вводить текст выполняет операцию геокодирования через Mapbox и предлагает выбрать 5 результатов
+  - если нажать на прицел и поставить точку на карту выполняет обратное геокодирование по координатам и заполняет поле адресом
 
-## Running end-to-end tests
+### Таблица
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- первоначально загружается асинхронно из сервиса [Supabase](https://supabase.com/)
+- далее после первого сохранения из LocalStorage
+- при редактировании строки выполняется обратное геокодирование и поле "Место" заполняется адресом
 
-## Further help
+### Фильтры
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+- фильтры работают через стандартный метод класса `MatTableDataSource`
+- есть 2 фиксированных фильтра по текущей дате и один динамический с выбором диапазона дат
