@@ -8,6 +8,12 @@
 ## Технологии
 
 - Angular
+  - `Reactive Forms`
+  - `*ngFor`
+  - `*ngTemplateOutlet` + context
+  - `Routing`, `Resolvers`
+  - `InjectionToken`, `inject()`
+  - локазилация
 - UI фреймворк Angular Material
 - карты [Mapbox](https://www.mapbox.com/)
 - начальная загрузка данных из [Supabase](https://supabase.com/)
