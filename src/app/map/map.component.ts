@@ -28,7 +28,7 @@ export class MapComponent {
   zoom = this.bigZoom
   selectPointListener?: (event: any) => void
 
-  constructor(private routes: ActivatedRoute, private mapService: MapService, breakpointObserver: BreakpointObserver) {
+  constructor(private mapService: MapService, breakpointObserver: BreakpointObserver) {
     this.allPointsCoordinates = this.mapService.allFestivalCoordinates
     this.startingСenter = this.allPointsCoordinates[0]
     mapboxgl.accessToken = inject(ACCESS_TOKENS).mapbox

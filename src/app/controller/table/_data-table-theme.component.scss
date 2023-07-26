@@ -7,7 +7,7 @@
   $accent-palette: map.get($color-config, 'accent');
 
   app-data-table {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.7);
   }
   .logo {
     color: #737373;
@@ -44,10 +44,10 @@
   }
   .mat-mdc-table mat-row.mat-mdc-row {
     &:hover {
-      background-color: rgba(255, 255, 255, 0.07);
+      background-color: rgba(255, 255, 255, 0.2);
     }
     &:active {
-      background-color: rgba(255, 255, 255, 0.15);
+      background-color: rgba(255, 255, 255, 0.3);
     }
   }
 

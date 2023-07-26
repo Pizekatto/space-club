@@ -311,6 +311,7 @@ export class DataTableComponent {
         })
       )
       .subscribe(data => {
+        console.log(data)
         this.tempPoint = true
         let place
         if (data.length) {

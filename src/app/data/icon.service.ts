@@ -34,7 +34,9 @@ const icons: IconConfig[] = [
   }
 ]
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class IconService {
   constructor(private readonly matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer) {
     icons.forEach(icon => this.add(icon))

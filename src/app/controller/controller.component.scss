@@ -101,7 +101,7 @@ app-data-table {
     filter: blur(5px);
     animation: planet-flight-throw-display 5s;
     animation-fill-mode: forwards;
-    animation-delay: 1s;
+    animation-delay: 5s;
     animation-timing-function: cubic-bezier(1, 0.1, 1, 0.06);
     transform: scale(0.05) translateX(30vh);
   }

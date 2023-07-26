@@ -5,6 +5,7 @@
     "start": "ng serve --open --host 192.168.0.14",
     "build": "ng build --base-href /space-club/",
     "test": "ng test",
+    "test coverage": "ng test --no-watch --code-coverage",
     "deploy": "gh-pages -d dist"
   },
   "private": true,

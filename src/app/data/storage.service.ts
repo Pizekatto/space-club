@@ -4,7 +4,9 @@ import { FestivalsService } from './festivals.service'
 
 const STORAGE_KEY = 'festivals'
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class StorageService {
   readonly storage: Storage = window.localStorage
 
@@ -27,6 +29,7 @@ export class StorageService {
   }
 
   get(): Festival[] | null {
+    console.log('get вызван из настоящего класса')
     const localState = this.storage.getItem(STORAGE_KEY)
     return localState ? this.festService.deserializeDate(JSON.parse(localState) as FestivalDTO[]) : null
   }

@@ -7,7 +7,9 @@ import { StorageService } from './storage.service'
 import { Observable, of, tap } from 'rxjs'
 import { FestivalsService } from './festivals.service'
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class DataService {
   filterFunctions: Record<string, (f: Festival, dateRange: Partial<FestDate>) => boolean | void> = {
     date: this.dateFilter,

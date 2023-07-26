@@ -4,7 +4,6 @@ import { BrowserModule } from '@angular/platform-browser'
 import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { DataModule } from './data/data.module'
 import { ControllerModule } from './controller/controller.module'
 import { environment } from 'src/environments/environments'
 import { AccessTokens, PublicUrls, Users } from './data/interfaces'
@@ -19,7 +18,7 @@ registerLocaleData(localeRu)
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule, DataModule.forRoot(), ControllerModule],
+  imports: [BrowserModule, BrowserAnimationsModule, AppRoutingModule, ControllerModule],
   providers: [
     {
       provide: ACCESS_TOKENS,

@@ -11,7 +11,9 @@ export enum Locations {
   america = 'america'
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class MapService {
   accessToken: string
   geocoding_url: string

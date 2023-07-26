@@ -3,7 +3,9 @@ import { Coordinates, Festival, FestivalDTO } from './interfaces'
 import { SupabaseService } from './supabase.service'
 import { Observable, map } from 'rxjs'
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class FestivalsService {
   exampleFest = {
     title: 'Фестиваль электронной музыки ',

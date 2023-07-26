@@ -6,7 +6,6 @@ import { HttpClientModule } from '@angular/common/http'
 @NgModule({
   declarations: [MapComponent],
   imports: [HttpClientModule],
-  providers: [MapService],
   exports: [MapComponent]
 })
 export class MapModule {}
